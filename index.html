@@ -183,6 +183,26 @@
         #statusMsg.show {
             display: block;
         }
+
+        /* Admin notice */
+        #adminNotice {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,0,0,0.9);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            display: none;
+            z-index: 1500;
+            text-align: center;
+            max-width: 80%;
+        }
+        #adminNotice.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -191,6 +211,12 @@
     
     <!-- Status Message -->
     <div id="statusMsg"></div>
+    
+    <!-- Admin Notice -->
+    <div id="adminNotice">
+        ⚠️ Audio streaming may be blocked by admin policies<br>
+        Check Google Admin Console → Device Settings → Content Settings
+    </div>
 
     <!-- Start Screen for Kiosk Mode -->
     <div id="startScreen">
@@ -201,12 +227,12 @@
     <audio id="audio" preload="auto"></audio>
 
     <div class="stations">
-        <button class="station-btn selected" data-src="https://ice1.somafm.com/groovesalad-128-aac">1</button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/dronezone-128-aac">2</button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/deepspaceone-128-aac">3</button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/indiepop-128-aac">4</button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/beatblender-128-aac">5</button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/gsclassic-128-aac">6</button>
+        <button class="station-btn selected" data-src="https://somafm.com/groovesalad130.pls">1</button>
+        <button class="station-btn" data-src="https://somafm.com/dronezone130.pls">2</button>
+        <button class="station-btn" data-src="https://somafm.com/deepspaceone.pls">3</button>
+        <button class="station-btn" data-src="https://somafm.com/indiepop130.pls">4</button>
+        <button class="station-btn" data-src="https://somafm.com/beatblender130.pls">5</button>
+        <button class="station-btn" data-src="https://somafm.com/gsclassic130.pls">6</button>
     </div>
 
     <div class="play-container">
@@ -241,11 +267,13 @@
         const debugPanel = document.getElementById('debugPanel');
         const debugToggle = document.getElementById('debugToggle');
         const statusMsg = document.getElementById('statusMsg');
+        const adminNotice = document.getElementById('adminNotice');
 
         let currentStation = stationBtns[0].dataset.src;
         let isPlaying = false;
         let audioInitialized = false;
         let debugVisible = false;
+        let errorCount = 0;
         audio.volume = 0.8;
 
         // Debug logging function
@@ -257,7 +285,6 @@
             debugPanel.appendChild(line);
             debugPanel.scrollTop = debugPanel.scrollHeight;
             
-            // Also log to console
             console.log(`[${type.toUpperCase()}] ${message}`);
         }
 
@@ -283,16 +310,15 @@
             }
         });
 
-        log('Page loaded - Using AAC streams', 'success');
-        log(`User Agent: ${navigator.userAgent.substring(0, 100)}...`, 'info');
+        log('Page loaded - Using PLS playlist files', 'success');
+        log(`Browser: ${navigator.userAgent.substring(0, 80)}...`, 'info');
         
-        // Initialize audio context on user gesture (for kiosk mode)
+        // Initialize audio context on user gesture
         startBtn.addEventListener('click', async function() {
             log('TAP TO START clicked', 'info');
             showStatus('Initializing audio...');
             
             try {
-                // Set source and unmute
                 audio.src = currentStation;
                 log(`Setting source: ${currentStation}`, 'info');
                 
@@ -301,31 +327,31 @@
                 log('Audio unmuted, volume set to 0.8', 'success');
                 
                 audioInitialized = true;
-                
-                // Load the audio
                 audio.load();
                 log('Audio load() called', 'info');
                 
-                // Wait for loadstart event
                 await new Promise((resolve, reject) => {
                     const timeout = setTimeout(() => reject('Load timeout'), 5000);
                     audio.addEventListener('loadstart', function() {
                         clearTimeout(timeout);
                         resolve();
                     }, { once: true });
+                    audio.addEventListener('error', function() {
+                        clearTimeout(timeout);
+                        reject('Load error');
+                    }, { once: true });
                 });
                 
                 log('Audio load started successfully', 'success');
-                
-                // Hide start screen
                 startScreen.classList.add('hidden');
                 showStatus('Ready! Click PLAY button', 2000);
-                
-                log('Initialization complete - ready to play', 'success');
+                log('Initialization complete', 'success');
                 
             } catch (err) {
                 log(`Initialization error: ${err}`, 'error');
-                showStatus('Error initializing audio', 3000);
+                showStatus('Error - May be blocked by admin', 3000);
+                adminNotice.classList.add('show');
+                setTimeout(() => adminNotice.classList.remove('show'), 10000);
             }
         });
 
@@ -340,8 +366,6 @@
                 catch (err) { 
                     log(`Wake Lock error: ${err.message}`, 'error');
                 }
-            } else {
-                log('Wake Lock API not available', 'info');
             }
         }
         async function releaseWakeLock() {
@@ -352,36 +376,41 @@
             }
         }
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && isPlaying) {
-                log('Page became visible, re-requesting wake lock', 'info');
-                requestWakeLock();
-            }
+            if (document.visibilityState === 'visible' && isPlaying) requestWakeLock();
         });
 
         // Audio events
         audio.addEventListener('playing', () => {
             isPlaying = true;
             playBtn.classList.add('playing');
-            log('▶️ Audio PLAYING event fired', 'success');
+            errorCount = 0;
+            log('▶️ Audio PLAYING', 'success');
             showStatus('Playing...', 1000);
         });
         
         audio.addEventListener('pause', () => {
             isPlaying = false;
             playBtn.classList.remove('playing');
-            log('⏸️ Audio PAUSED event fired', 'info');
+            log('⏸️ Audio PAUSED', 'info');
         });
         
         audio.addEventListener('error', e => {
             const errorMessages = {
-                1: 'MEDIA_ERR_ABORTED - Fetching aborted',
-                2: 'MEDIA_ERR_NETWORK - Network error',
-                3: 'MEDIA_ERR_DECODE - Decoding error',
-                4: 'MEDIA_ERR_SRC_NOT_SUPPORTED - Format not supported'
+                1: 'ABORTED - May be blocked by policy',
+                2: 'NETWORK - Connection/firewall issue',
+                3: 'DECODE - Format error',
+                4: 'NOT_SUPPORTED - Format blocked by admin'
             };
             const errorMsg = audio.error ? errorMessages[audio.error.code] : 'Unknown error';
-            log(`❌ Audio ERROR: ${errorMsg}`, 'error');
-            showStatus(`Error: ${errorMsg}`, 5000);
+            log(`❌ ERROR: ${errorMsg}`, 'error');
+            
+            errorCount++;
+            if (errorCount >= 2) {
+                showStatus('Streaming blocked - Check admin settings', 5000);
+                adminNotice.classList.add('show');
+            } else {
+                showStatus(`Error: ${errorMsg}`, 3000);
+            }
             
             isPlaying = false;
             playBtn.classList.remove('playing');
@@ -390,19 +419,14 @@
         audio.addEventListener('loadstart', () => log('Load start', 'info'));
         audio.addEventListener('loadedmetadata', () => log('Metadata loaded', 'success'));
         audio.addEventListener('loadeddata', () => log('Data loaded', 'success'));
-        audio.addEventListener('canplay', () => log('Can play – stream ready', 'success'));
+        audio.addEventListener('canplay', () => log('Can play – ready', 'success'));
         audio.addEventListener('canplaythrough', () => log('Can play through', 'success'));
-        audio.addEventListener('stalled', () => log('Stream stalled', 'error'));
-        audio.addEventListener('suspend', () => log('Stream suspended', 'info'));
-        audio.addEventListener('waiting', () => log('Waiting for more data', 'info'));
-        audio.addEventListener('ended', () => log('Stream ended', 'info'));
 
         // Station selection
         stationBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 if (!audioInitialized) {
-                    log('Station clicked but audio not initialized', 'error');
-                    showStatus('Please click TAP TO START first', 2000);
+                    showStatus('Click TAP TO START first', 2000);
                     return;
                 }
 
@@ -412,13 +436,10 @@
                 log(`Station changed to: ${currentStation}`, 'info');
 
                 if (isPlaying) {
-                    log('Switching station while playing', 'info');
                     audio.src = currentStation;
                     audio.load();
-                    
                     audio.play().catch(err => {
-                        log(`Station change play error: ${err.message}`, 'error');
-                        showStatus('Error switching station', 2000);
+                        log(`Station change error: ${err.message}`, 'error');
                         playBtn.classList.remove('playing');
                         isPlaying = false;
                     });
@@ -431,47 +452,36 @@
             log('Play button clicked', 'info');
             
             if (!audioInitialized) {
-                log('Play attempted before initialization', 'error');
-                showStatus('Please click TAP TO START first', 2000);
+                showStatus('Click TAP TO START first', 2000);
                 return;
             }
 
             if (!isPlaying) {
-                log('Attempting to start playback...', 'info');
-                showStatus('Starting playback...');
+                log('Starting playback...', 'info');
+                showStatus('Loading stream...');
                 
-                // Ensure unmuted
                 audio.muted = false;
                 audio.volume = volumeSlider.value / 100;
-                log(`Volume: ${audio.volume}, Muted: ${audio.muted}`, 'info');
                 
                 try {
-                    // Ensure source is set
-                    if (!audio.src || audio.src !== currentStation) {
-                        log(`Setting source to ${currentStation}`, 'info');
+                    if (!audio.src || !audio.src.includes(currentStation)) {
                         audio.src = currentStation;
                         audio.load();
-                        // Wait briefly for load
                         await new Promise(resolve => setTimeout(resolve, 100));
                     }
                     
-                    log('Calling audio.play()...', 'info');
+                    log('Calling play()...', 'info');
                     await audio.play();
-                    
                     await requestWakeLock();
-                    log('✅ Playback started successfully', 'success');
+                    log('✅ Playback started', 'success');
                     
                 } catch (err) {
                     log(`❌ Play failed: ${err.name} - ${err.message}`, 'error');
-                    showStatus(`Play failed: ${err.name}`, 3000);
-                    
-                    // Try to get more details
-                    log(`Audio src: ${audio.src}`, 'info');
-                    log(`Audio readyState: ${audio.readyState}`, 'info');
-                    log(`Audio networkState: ${audio.networkState}`, 'info');
+                    showStatus('Play failed - May be blocked', 3000);
+                    adminNotice.classList.add('show');
                 }
             } else {
-                log('Pausing playback', 'info');
+                log('Pausing', 'info');
                 audio.pause();
                 await releaseWakeLock();
             }
@@ -481,11 +491,8 @@
         let previousVolume = audio.volume;
         volumeSlider.addEventListener('input', function() {
             if (!audioInitialized) return;
-            
             audio.volume = this.value / 100;
             audio.muted = false;
-            log(`Volume changed to ${audio.volume.toFixed(2)}`, 'info');
-            
             if (audio.volume > 0) {
                 muteBtn.classList.remove('muted');
                 previousVolume = audio.volume;
@@ -496,18 +503,15 @@
         
         muteBtn.addEventListener('click', function() {
             if (!audioInitialized) return;
-            
             if (audio.muted || audio.volume === 0) {
                 audio.muted = false;
                 audio.volume = previousVolume || 0.8;
                 volumeSlider.value = audio.volume * 100;
                 muteBtn.classList.remove('muted');
-                log('Unmuted', 'info');
             } else {
                 previousVolume = audio.volume;
                 audio.muted = true;
                 muteBtn.classList.add('muted');
-                log('Muted', 'info');
             }
         });
     </script>
