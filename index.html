@@ -175,38 +175,29 @@
         let isPlaying = false;
         let audioInitialized = false;
         audio.volume = 0.8;
-        audio.muted = true; // Start muted until user interaction
 
-        // Pre-set initial source
-        audio.src = currentStation;
-
+        // Don't set src initially - wait for user interaction
+        
         // Initialize audio context on user gesture (for kiosk mode)
         startBtn.addEventListener('click', async function() {
             console.log('Initializing audio...');
             
-            // Unlock audio context
+            // Set source and unmute
+            audio.src = currentStation;
             audio.muted = false;
             audio.volume = 0.8;
             audioInitialized = true;
             
-            // Try to play and immediately pause to unlock audio
-            try {
-                await audio.play();
-                audio.pause();
-                audio.currentTime = 0;
-                console.log('Audio context unlocked');
-            } catch (err) {
-                console.log('Audio unlock attempt:', err);
-            }
+            // Load the audio
+            audio.load();
+            
+            // Wait a moment for load to start
+            await new Promise(resolve => setTimeout(resolve, 100));
             
             // Hide start screen
             startScreen.classList.add('hidden');
             
-            // Optionally auto-play after unlock
-            // Uncomment the next 3 lines if you want music to start immediately
-            // audio.play().then(() => {
-            //     requestWakeLock();
-            // }).catch(err => console.error('Auto-play failed:', err));
+            console.log('Audio initialized and ready');
         });
 
         // Wake Lock
@@ -231,7 +222,7 @@
             if (document.visibilityState === 'visible' && isPlaying) requestWakeLock();
         });
 
-        // Audio events
+        // Audio events - don't update UI until actually playing
         audio.addEventListener('playing', () => {
             isPlaying = true;
             playBtn.classList.add('playing');
@@ -240,26 +231,49 @@
         audio.addEventListener('pause', () => {
             isPlaying = false;
             playBtn.classList.remove('playing');
+            console.log('Playback paused');
         });
         audio.addEventListener('error', e => {
-            console.error('Audio error:', audio.error?.message || e);
+            console.error('Audio error:', audio.error?.code, audio.error?.message || e);
             isPlaying = false;
             playBtn.classList.remove('playing');
+            
+            // Additional error details
+            if (audio.error) {
+                const errorMessages = {
+                    1: 'MEDIA_ERR_ABORTED - Fetching aborted by user',
+                    2: 'MEDIA_ERR_NETWORK - Network error',
+                    3: 'MEDIA_ERR_DECODE - Decoding error',
+                    4: 'MEDIA_ERR_SRC_NOT_SUPPORTED - Format not supported'
+                };
+                console.error('Error details:', errorMessages[audio.error.code] || 'Unknown error');
+            }
         });
+        audio.addEventListener('loadstart', () => console.log('Load start'));
+        audio.addEventListener('loadedmetadata', () => console.log('Metadata loaded'));
+        audio.addEventListener('loadeddata', () => console.log('Data loaded'));
         audio.addEventListener('canplay', () => console.log('Can play – stream ready'));
+        audio.addEventListener('canplaythrough', () => console.log('Can play through'));
         audio.addEventListener('stalled', () => console.log('Stream stalled'));
         audio.addEventListener('suspend', () => console.log('Stream suspended'));
         audio.addEventListener('waiting', () => console.log('Waiting for more data'));
 
         stationBtns.forEach(btn => {
             btn.addEventListener('click', function() {
+                if (!audioInitialized) {
+                    console.warn('Audio not initialized');
+                    return;
+                }
+
                 stationBtns.forEach(b => b.classList.remove('selected'));
                 this.classList.add('selected');
                 currentStation = this.dataset.src;
 
                 if (isPlaying) {
+                    console.log('Switching to station:', currentStation);
                     audio.src = currentStation;
                     audio.load();
+                    
                     audio.play().catch(err => {
                         console.error('Station change play error:', err);
                         playBtn.classList.remove('playing');
@@ -269,35 +283,40 @@
             });
         });
 
-        playBtn.addEventListener('click', function() {
+        playBtn.addEventListener('click', async function() {
             if (!audioInitialized) {
                 console.warn('Audio not initialized – click "TAP TO START" first');
                 return;
             }
 
             if (!isPlaying) {
-                playBtn.classList.add('playing'); // Optimistic UI
-                audio.src = currentStation;
-                audio.load();
-                audio.muted = false; // Ensure unmuted
-
-                audio.play()
-                    .then(() => {
-                        requestWakeLock();
-                        console.log('Play promise resolved');
-                    })
-                    .catch(err => {
-                        console.error('Play failed:', err.name, err.message);
-                        setTimeout(() => {
-                            playBtn.classList.remove('playing');
-                        }, 1200); // Longer flash to indicate attempt
-                    });
+                console.log('Attempting to play:', currentStation);
+                
+                // Don't update UI optimistically - wait for actual playback
+                audio.muted = false;
+                audio.volume = volumeSlider.value / 100;
+                
+                try {
+                    // Ensure source is set
+                    if (audio.src !== currentStation) {
+                        audio.src = currentStation;
+                        audio.load();
+                        // Wait for load to start
+                        await new Promise(resolve => setTimeout(resolve, 50));
+                    }
+                    
+                    await audio.play();
+                    await requestWakeLock();
+                    console.log('Play successful');
+                } catch (err) {
+                    console.error('Play failed:', err.name, err.message, err);
+                    // Don't update UI if play failed
+                }
             } else {
+                console.log('Pausing playback');
                 audio.pause();
-                audio.src = ''; // Clear to stop buffering
-                releaseWakeLock();
-                playBtn.classList.remove('playing');
-                isPlaying = false;
+                await releaseWakeLock();
+                // UI will update via 'pause' event
             }
         });
 
