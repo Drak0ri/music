@@ -16,9 +16,47 @@
             background-color: #1a237e;
             height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             font-family: system-ui, sans-serif;
+        }
+
+        .stations {
+            display: flex;
+            gap: 20px;
+            margin-top: 60px;
+        }
+
+        .station-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .station-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .station-btn.selected {
+            background-color: #ffffff;
+            color: #1a237e;
+            border-color: #ffffff;
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.4);
+        }
+
+        .play-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         #playBtn {
@@ -72,22 +110,52 @@
     </style>
 </head>
 <body>
-    <audio id="audio" src="https://ice1.somafm.com/groovesalad-128-mp3" preload="none"></audio>
+    <audio id="audio" preload="none"></audio>
 
-    <button id="playBtn" aria-label="Play/Pause">
-        <svg class="play-icon" viewBox="0 0 24 24">
-            <path d="M8 5v14l11-7z"/>
-        </svg>
-        <svg class="pause-icon" viewBox="0 0 24 24">
-            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-        </svg>
-    </button>
+    <div class="stations">
+        <button class="station-btn selected" data-src="https://ice1.somafm.com/groovesalad-128-mp3">1</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/dronezone-256-mp3">2</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/deepspaceone-128-mp3">3</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/indiepop-128-mp3">4</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/beatblender-128-mp3">5</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/gsclassic-128-mp3">6</button>
+    </div>
+
+    <div class="play-container">
+        <button id="playBtn" aria-label="Play/Pause">
+            <svg class="play-icon" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+            </svg>
+            <svg class="pause-icon" viewBox="0 0 24 24">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+        </button>
+    </div>
 
     <img id="logo" src="logo.png" alt="Logo">
 
     <script>
         const audio = document.getElementById('audio');
         const playBtn = document.getElementById('playBtn');
+        const stationBtns = document.querySelectorAll('.station-btn');
+
+        let currentStation = stationBtns[0].dataset.src;
+        audio.src = currentStation;
+
+        stationBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                stationBtns.forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+
+                const wasPlaying = !audio.paused;
+                currentStation = this.dataset.src;
+                audio.src = currentStation;
+
+                if (wasPlaying) {
+                    audio.play();
+                }
+            });
+        });
 
         playBtn.addEventListener('click', function() {
             if (audio.paused) {
