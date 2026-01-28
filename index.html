@@ -184,7 +184,7 @@
     </style>
 </head>
 <body>
-    <audio id="audio" preload="none"></audio>
+    <audio id="audio" preload="none" crossorigin="anonymous"></audio>
 
     <div class="stations">
         <button class="station-btn selected" data-src="https://ice1.somafm.com/groovesalad-128-mp3">1</button>
@@ -228,7 +228,7 @@
         const volumeSlider = document.getElementById('volumeSlider');
 
         let currentStation = stationBtns[0].dataset.src;
-        audio.src = currentStation;
+        let isPlaying = false;
         audio.volume = 0.8;
 
         // Wake Lock to prevent sleep
@@ -253,9 +253,26 @@
 
         // Re-acquire wake lock when page becomes visible again
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && !audio.paused) {
+            if (document.visibilityState === 'visible' && isPlaying) {
                 requestWakeLock();
             }
+        });
+
+        // Audio event listeners for reliable state tracking
+        audio.addEventListener('playing', () => {
+            isPlaying = true;
+            playBtn.classList.add('playing');
+        });
+
+        audio.addEventListener('pause', () => {
+            isPlaying = false;
+            playBtn.classList.remove('playing');
+        });
+
+        audio.addEventListener('error', (e) => {
+            console.error('Audio error:', audio.error);
+            isPlaying = false;
+            playBtn.classList.remove('playing');
         });
 
         stationBtns.forEach(btn => {
@@ -263,24 +280,27 @@
                 stationBtns.forEach(b => b.classList.remove('selected'));
                 this.classList.add('selected');
 
-                const wasPlaying = !audio.paused;
+                const wasPlaying = isPlaying;
                 currentStation = this.dataset.src;
-                audio.src = currentStation;
 
                 if (wasPlaying) {
-                    audio.play();
+                    audio.src = currentStation;
+                    audio.load();
+                    audio.play().catch(err => console.error('Play error:', err));
                 }
             });
         });
 
         playBtn.addEventListener('click', function() {
-            if (audio.paused) {
-                audio.play();
-                playBtn.classList.add('playing');
-                requestWakeLock();
+            if (!isPlaying) {
+                audio.src = currentStation;
+                audio.load();
+                audio.play()
+                    .then(() => requestWakeLock())
+                    .catch(err => console.error('Play error:', err));
             } else {
                 audio.pause();
-                playBtn.classList.remove('playing');
+                audio.src = '';
                 releaseWakeLock();
             }
         });
