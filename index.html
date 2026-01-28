@@ -198,15 +198,15 @@
         <button id="debugToggle">Show Debug Info</button>
     </div>
 
-    <audio id="audio" preload="auto" crossorigin="anonymous"></audio>
+    <audio id="audio" preload="auto"></audio>
 
     <div class="stations">
-        <button class="station-btn selected" data-src="https://ice1.somafm.com/groovesalad-128-mp3">1</button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/dronezone-256-mp3">2</button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/deepspaceone-128-mp3">3</button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/indiepop-128-mp3">4</button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/beatblender-128-mp3">5</button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/gsclassic-128-mp3">6</button>
+        <button class="station-btn selected" data-src="https://ice1.somafm.com/groovesalad-128-aac">1</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/dronezone-128-aac">2</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/deepspaceone-128-aac">3</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/indiepop-128-aac">4</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/beatblender-128-aac">5</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/gsclassic-128-aac">6</button>
     </div>
 
     <div class="play-container">
@@ -283,7 +283,7 @@
             }
         });
 
-        log('Page loaded', 'success');
+        log('Page loaded - Using AAC streams', 'success');
         log(`User Agent: ${navigator.userAgent.substring(0, 100)}...`, 'info');
         
         // Initialize audio context on user gesture (for kiosk mode)
