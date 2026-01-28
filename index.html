@@ -142,6 +142,33 @@
         let currentStation = stationBtns[0].dataset.src;
         audio.src = currentStation;
 
+        // Wake Lock to prevent sleep
+        let wakeLock = null;
+
+        async function requestWakeLock() {
+            if ('wakeLock' in navigator) {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                } catch (err) {
+                    console.log('Wake Lock error:', err);
+                }
+            }
+        }
+
+        async function releaseWakeLock() {
+            if (wakeLock) {
+                await wakeLock.release();
+                wakeLock = null;
+            }
+        }
+
+        // Re-acquire wake lock when page becomes visible again
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && !audio.paused) {
+                requestWakeLock();
+            }
+        });
+
         stationBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 stationBtns.forEach(b => b.classList.remove('selected'));
@@ -161,9 +188,11 @@
             if (audio.paused) {
                 audio.play();
                 playBtn.classList.add('playing');
+                requestWakeLock();
             } else {
                 audio.pause();
                 playBtn.classList.remove('playing');
+                releaseWakeLock();
             }
         });
     </script>
