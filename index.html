@@ -16,6 +16,39 @@
             font-family: system-ui, sans-serif;
         }
         
+        /* Debug Panel */
+        #debugPanel {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 2000;
+            display: none;
+        }
+        #debugPanel.show {
+            display: block;
+        }
+        .debug-line {
+            margin: 3px 0;
+        }
+        .debug-error {
+            color: #ff4444;
+        }
+        .debug-success {
+            color: #00ff00;
+        }
+        .debug-info {
+            color: #ffaa00;
+        }
+        
         /* Start Screen for Kiosk Mode */
         #startScreen {
             position: fixed;
@@ -49,6 +82,16 @@
         }
         #startBtn:active {
             transform: scale(0.98);
+        }
+        #debugToggle {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
         }
         
         .stations {
@@ -122,12 +165,37 @@
             width: 20px; height: 20px;
             background: #ffffff; border-radius: 50%; cursor: pointer; border: none;
         }
+        
+        /* Status indicator */
+        #statusMsg {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 15px;
+            font-size: 24px;
+            display: none;
+            z-index: 1500;
+        }
+        #statusMsg.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
+    <!-- Debug Panel -->
+    <div id="debugPanel"></div>
+    
+    <!-- Status Message -->
+    <div id="statusMsg"></div>
+
     <!-- Start Screen for Kiosk Mode -->
     <div id="startScreen">
         <button id="startBtn">TAP TO START</button>
+        <button id="debugToggle">Show Debug Info</button>
     </div>
 
     <audio id="audio" preload="auto" crossorigin="anonymous"></audio>
@@ -170,34 +238,95 @@
         const volumeSlider = document.getElementById('volumeSlider');
         const startScreen = document.getElementById('startScreen');
         const startBtn = document.getElementById('startBtn');
+        const debugPanel = document.getElementById('debugPanel');
+        const debugToggle = document.getElementById('debugToggle');
+        const statusMsg = document.getElementById('statusMsg');
 
         let currentStation = stationBtns[0].dataset.src;
         let isPlaying = false;
         let audioInitialized = false;
+        let debugVisible = false;
         audio.volume = 0.8;
 
-        // Don't set src initially - wait for user interaction
+        // Debug logging function
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const line = document.createElement('div');
+            line.className = `debug-line debug-${type}`;
+            line.textContent = `[${timestamp}] ${message}`;
+            debugPanel.appendChild(line);
+            debugPanel.scrollTop = debugPanel.scrollHeight;
+            
+            // Also log to console
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        // Show status message
+        function showStatus(message, duration = 3000) {
+            statusMsg.textContent = message;
+            statusMsg.classList.add('show');
+            setTimeout(() => {
+                statusMsg.classList.remove('show');
+            }, duration);
+        }
+
+        // Toggle debug panel
+        debugToggle.addEventListener('click', function() {
+            debugVisible = !debugVisible;
+            if (debugVisible) {
+                debugPanel.classList.add('show');
+                debugToggle.textContent = 'Hide Debug Info';
+                log('Debug panel opened', 'info');
+            } else {
+                debugPanel.classList.remove('show');
+                debugToggle.textContent = 'Show Debug Info';
+            }
+        });
+
+        log('Page loaded', 'success');
+        log(`User Agent: ${navigator.userAgent.substring(0, 100)}...`, 'info');
         
         // Initialize audio context on user gesture (for kiosk mode)
         startBtn.addEventListener('click', async function() {
-            console.log('Initializing audio...');
+            log('TAP TO START clicked', 'info');
+            showStatus('Initializing audio...');
             
-            // Set source and unmute
-            audio.src = currentStation;
-            audio.muted = false;
-            audio.volume = 0.8;
-            audioInitialized = true;
-            
-            // Load the audio
-            audio.load();
-            
-            // Wait a moment for load to start
-            await new Promise(resolve => setTimeout(resolve, 100));
-            
-            // Hide start screen
-            startScreen.classList.add('hidden');
-            
-            console.log('Audio initialized and ready');
+            try {
+                // Set source and unmute
+                audio.src = currentStation;
+                log(`Setting source: ${currentStation}`, 'info');
+                
+                audio.muted = false;
+                audio.volume = 0.8;
+                log('Audio unmuted, volume set to 0.8', 'success');
+                
+                audioInitialized = true;
+                
+                // Load the audio
+                audio.load();
+                log('Audio load() called', 'info');
+                
+                // Wait for loadstart event
+                await new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => reject('Load timeout'), 5000);
+                    audio.addEventListener('loadstart', function() {
+                        clearTimeout(timeout);
+                        resolve();
+                    }, { once: true });
+                });
+                
+                log('Audio load started successfully', 'success');
+                
+                // Hide start screen
+                startScreen.classList.add('hidden');
+                showStatus('Ready! Click PLAY button', 2000);
+                
+                log('Initialization complete - ready to play', 'success');
+                
+            } catch (err) {
+                log(`Initialization error: ${err}`, 'error');
+                showStatus('Error initializing audio', 3000);
+            }
         });
 
         // Wake Lock
@@ -206,76 +335,90 @@
             if ('wakeLock' in navigator) {
                 try { 
                     wakeLock = await navigator.wakeLock.request('screen');
-                    console.log('Wake Lock acquired');
+                    log('Wake Lock acquired', 'success');
                 }
-                catch (err) { console.log('Wake Lock error:', err); }
+                catch (err) { 
+                    log(`Wake Lock error: ${err.message}`, 'error');
+                }
+            } else {
+                log('Wake Lock API not available', 'info');
             }
         }
         async function releaseWakeLock() {
             if (wakeLock) { 
                 await wakeLock.release(); 
                 wakeLock = null;
-                console.log('Wake Lock released');
+                log('Wake Lock released', 'info');
             }
         }
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && isPlaying) requestWakeLock();
+            if (document.visibilityState === 'visible' && isPlaying) {
+                log('Page became visible, re-requesting wake lock', 'info');
+                requestWakeLock();
+            }
         });
 
-        // Audio events - don't update UI until actually playing
+        // Audio events
         audio.addEventListener('playing', () => {
             isPlaying = true;
             playBtn.classList.add('playing');
-            console.log('Playback active');
+            log('▶️ Audio PLAYING event fired', 'success');
+            showStatus('Playing...', 1000);
         });
+        
         audio.addEventListener('pause', () => {
             isPlaying = false;
             playBtn.classList.remove('playing');
-            console.log('Playback paused');
+            log('⏸️ Audio PAUSED event fired', 'info');
         });
+        
         audio.addEventListener('error', e => {
-            console.error('Audio error:', audio.error?.code, audio.error?.message || e);
+            const errorMessages = {
+                1: 'MEDIA_ERR_ABORTED - Fetching aborted',
+                2: 'MEDIA_ERR_NETWORK - Network error',
+                3: 'MEDIA_ERR_DECODE - Decoding error',
+                4: 'MEDIA_ERR_SRC_NOT_SUPPORTED - Format not supported'
+            };
+            const errorMsg = audio.error ? errorMessages[audio.error.code] : 'Unknown error';
+            log(`❌ Audio ERROR: ${errorMsg}`, 'error');
+            showStatus(`Error: ${errorMsg}`, 5000);
+            
             isPlaying = false;
             playBtn.classList.remove('playing');
-            
-            // Additional error details
-            if (audio.error) {
-                const errorMessages = {
-                    1: 'MEDIA_ERR_ABORTED - Fetching aborted by user',
-                    2: 'MEDIA_ERR_NETWORK - Network error',
-                    3: 'MEDIA_ERR_DECODE - Decoding error',
-                    4: 'MEDIA_ERR_SRC_NOT_SUPPORTED - Format not supported'
-                };
-                console.error('Error details:', errorMessages[audio.error.code] || 'Unknown error');
-            }
         });
-        audio.addEventListener('loadstart', () => console.log('Load start'));
-        audio.addEventListener('loadedmetadata', () => console.log('Metadata loaded'));
-        audio.addEventListener('loadeddata', () => console.log('Data loaded'));
-        audio.addEventListener('canplay', () => console.log('Can play – stream ready'));
-        audio.addEventListener('canplaythrough', () => console.log('Can play through'));
-        audio.addEventListener('stalled', () => console.log('Stream stalled'));
-        audio.addEventListener('suspend', () => console.log('Stream suspended'));
-        audio.addEventListener('waiting', () => console.log('Waiting for more data'));
+        
+        audio.addEventListener('loadstart', () => log('Load start', 'info'));
+        audio.addEventListener('loadedmetadata', () => log('Metadata loaded', 'success'));
+        audio.addEventListener('loadeddata', () => log('Data loaded', 'success'));
+        audio.addEventListener('canplay', () => log('Can play – stream ready', 'success'));
+        audio.addEventListener('canplaythrough', () => log('Can play through', 'success'));
+        audio.addEventListener('stalled', () => log('Stream stalled', 'error'));
+        audio.addEventListener('suspend', () => log('Stream suspended', 'info'));
+        audio.addEventListener('waiting', () => log('Waiting for more data', 'info'));
+        audio.addEventListener('ended', () => log('Stream ended', 'info'));
 
+        // Station selection
         stationBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 if (!audioInitialized) {
-                    console.warn('Audio not initialized');
+                    log('Station clicked but audio not initialized', 'error');
+                    showStatus('Please click TAP TO START first', 2000);
                     return;
                 }
 
                 stationBtns.forEach(b => b.classList.remove('selected'));
                 this.classList.add('selected');
                 currentStation = this.dataset.src;
+                log(`Station changed to: ${currentStation}`, 'info');
 
                 if (isPlaying) {
-                    console.log('Switching to station:', currentStation);
+                    log('Switching station while playing', 'info');
                     audio.src = currentStation;
                     audio.load();
                     
                     audio.play().catch(err => {
-                        console.error('Station change play error:', err);
+                        log(`Station change play error: ${err.message}`, 'error');
+                        showStatus('Error switching station', 2000);
                         playBtn.classList.remove('playing');
                         isPlaying = false;
                     });
@@ -283,40 +426,54 @@
             });
         });
 
+        // Play button
         playBtn.addEventListener('click', async function() {
+            log('Play button clicked', 'info');
+            
             if (!audioInitialized) {
-                console.warn('Audio not initialized – click "TAP TO START" first');
+                log('Play attempted before initialization', 'error');
+                showStatus('Please click TAP TO START first', 2000);
                 return;
             }
 
             if (!isPlaying) {
-                console.log('Attempting to play:', currentStation);
+                log('Attempting to start playback...', 'info');
+                showStatus('Starting playback...');
                 
-                // Don't update UI optimistically - wait for actual playback
+                // Ensure unmuted
                 audio.muted = false;
                 audio.volume = volumeSlider.value / 100;
+                log(`Volume: ${audio.volume}, Muted: ${audio.muted}`, 'info');
                 
                 try {
                     // Ensure source is set
-                    if (audio.src !== currentStation) {
+                    if (!audio.src || audio.src !== currentStation) {
+                        log(`Setting source to ${currentStation}`, 'info');
                         audio.src = currentStation;
                         audio.load();
-                        // Wait for load to start
-                        await new Promise(resolve => setTimeout(resolve, 50));
+                        // Wait briefly for load
+                        await new Promise(resolve => setTimeout(resolve, 100));
                     }
                     
+                    log('Calling audio.play()...', 'info');
                     await audio.play();
+                    
                     await requestWakeLock();
-                    console.log('Play successful');
+                    log('✅ Playback started successfully', 'success');
+                    
                 } catch (err) {
-                    console.error('Play failed:', err.name, err.message, err);
-                    // Don't update UI if play failed
+                    log(`❌ Play failed: ${err.name} - ${err.message}`, 'error');
+                    showStatus(`Play failed: ${err.name}`, 3000);
+                    
+                    // Try to get more details
+                    log(`Audio src: ${audio.src}`, 'info');
+                    log(`Audio readyState: ${audio.readyState}`, 'info');
+                    log(`Audio networkState: ${audio.networkState}`, 'info');
                 }
             } else {
-                console.log('Pausing playback');
+                log('Pausing playback', 'info');
                 audio.pause();
                 await releaseWakeLock();
-                // UI will update via 'pause' event
             }
         });
 
@@ -327,6 +484,8 @@
             
             audio.volume = this.value / 100;
             audio.muted = false;
+            log(`Volume changed to ${audio.volume.toFixed(2)}`, 'info');
+            
             if (audio.volume > 0) {
                 muteBtn.classList.remove('muted');
                 previousVolume = audio.volume;
@@ -334,6 +493,7 @@
                 muteBtn.classList.add('muted');
             }
         });
+        
         muteBtn.addEventListener('click', function() {
             if (!audioInitialized) return;
             
@@ -342,10 +502,12 @@
                 audio.volume = previousVolume || 0.8;
                 volumeSlider.value = audio.volume * 100;
                 muteBtn.classList.remove('muted');
+                log('Unmuted', 'info');
             } else {
                 previousVolume = audio.volume;
                 audio.muted = true;
                 muteBtn.classList.add('muted');
+                log('Muted', 'info');
             }
         });
     </script>
