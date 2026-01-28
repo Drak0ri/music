@@ -230,6 +230,7 @@
         let currentStation = stationBtns[0].dataset.src;
         let isPlaying = false;
         audio.volume = 0.8;
+        audio.muted = true; // Start muted to potentially bypass autoplay blocks in kiosk
 
         // Wake Lock to prevent sleep
         let wakeLock = null;
@@ -262,6 +263,7 @@
         audio.addEventListener('playing', () => {
             isPlaying = true;
             playBtn.classList.add('playing');
+            console.log('Playback started successfully');
         });
 
         audio.addEventListener('pause', () => {
@@ -275,6 +277,10 @@
             playBtn.classList.remove('playing');
         });
 
+        audio.addEventListener('canplay', () => {
+            console.log('Stream is ready to play');
+        });
+
         stationBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 stationBtns.forEach(b => b.classList.remove('selected'));
@@ -286,22 +292,41 @@
                 if (wasPlaying) {
                     audio.src = currentStation;
                     audio.load();
-                    audio.play().catch(err => console.error('Play error:', err));
+                    audio.play().catch(err => {
+                        console.error('Play error after station change:', err);
+                        playBtn.classList.remove('playing');
+                        isPlaying = false;
+                    });
                 }
             });
         });
 
         playBtn.addEventListener('click', function() {
             if (!isPlaying) {
+                // Optimistically toggle UI to pause symbol
+                playBtn.classList.add('playing');
                 audio.src = currentStation;
                 audio.load();
+                audio.muted = false; // Unmute on play attempt
                 audio.play()
-                    .then(() => requestWakeLock())
-                    .catch(err => console.error('Play error:', err));
+                    .then(() => {
+                        requestWakeLock();
+                        console.log('Play succeeded');
+                    })
+                    .catch(err => {
+                        console.error('Play failed:', err.name, err.message);
+                        // Revert UI if play fails
+                        playBtn.classList.remove('playing');
+                        audio.muted = true; // Reset mute
+                    });
             } else {
+                // Pause and toggle UI immediately
                 audio.pause();
                 audio.src = '';
+                audio.muted = true; // Reset mute
                 releaseWakeLock();
+                playBtn.classList.remove('playing');
+                isPlaying = false; // Ensure state sync
             }
         });
 
@@ -310,6 +335,7 @@
 
         volumeSlider.addEventListener('input', function() {
             audio.volume = this.value / 100;
+            audio.muted = false; // Unmute on volume change
             if (audio.volume > 0) {
                 muteBtn.classList.remove('muted');
                 previousVolume = audio.volume;
