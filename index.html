@@ -1,518 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Kiosk</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <title>Audio Test</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background-color: #1a237e;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: system-ui, sans-serif;
-        }
-        
-        /* Debug Panel */
-        #debugPanel {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.8);
-            color: #00ff00;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 14px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 2000;
-            display: none;
-        }
-        #debugPanel.show {
-            display: block;
-        }
-        .debug-line {
-            margin: 3px 0;
-        }
-        .debug-error {
-            color: #ff4444;
-        }
-        .debug-success {
-            color: #00ff00;
-        }
-        .debug-info {
-            color: #ffaa00;
-        }
-        
-        /* Start Screen for Kiosk Mode */
-        #startScreen {
-            position: fixed;
-            inset: 0;
-            background-color: #1a237e;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            gap: 20px;
-        }
-        #startScreen.hidden {
-            display: none;
-        }
-        #startBtn {
-            padding: 40px 80px;
-            font-size: 32px;
-            font-weight: bold;
-            background: #ffffff;
-            color: #1a237e;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        #startBtn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
-        }
-        #startBtn:active {
-            transform: scale(0.98);
-        }
-        #debugToggle {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 2px solid rgba(255,255,255,0.5);
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        
-        .stations {
-            display: flex;
-            gap: 20px;
-            margin-top: 60px;
-        }
-        .station-btn {
-            width: 70px; height: 70px;
-            border-radius: 50%;
-            border: 3px solid rgba(255,255,255,0.3);
-            background-color: rgba(255,255,255,0.1);
-            color: #ffffff;
-            font-size: 28px; font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .station-btn:hover { background-color: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.5); }
-        .station-btn.selected { background-color: #ffffff; color: #1a237e; border-color: #ffffff; box-shadow: 0 4px 20px rgba(255,255,255,0.4); }
-        .play-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        #playBtn {
-            width: 200px; height: 200px;
-            border-radius: 50%; border: none;
-            background-color: #ffffff;
-            cursor: pointer;
-            display: flex; justify-content: center; align-items: center;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        }
-        #playBtn:hover { transform: scale(1.05); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
-        #playBtn:active { transform: scale(0.98); }
-        #playBtn svg { width: 80px; height: 80px; fill: #1a237e; }
-        #playBtn .pause-icon { display: none; }
-        #playBtn.playing .play-icon { display: none; }
-        #playBtn.playing .pause-icon { display: block; }
-        #logo { position: fixed; bottom: 20px; left: 20px; height: 60px; opacity: 0.9; }
-        .volume-controls {
-            position: fixed; bottom: 20px; right: 20px;
-            display: flex; align-items: center; gap: 12px;
-        }
-        #muteBtn {
-            width: 50px; height: 50px;
-            border-radius: 50%; border: 2px solid rgba(255,255,255,0.5);
-            background-color: rgba(255,255,255,0.1);
-            cursor: pointer;
-            display: flex; justify-content: center; align-items: center;
-            transition: all 0.2s ease;
-        }
-        #muteBtn:hover { background-color: rgba(255,255,255,0.2); }
-        #muteBtn svg { width: 24px; height: 24px; fill: #ffffff; }
-        #muteBtn .muted-icon { display: none; }
-        #muteBtn.muted .volume-icon { display: none; }
-        #muteBtn.muted .muted-icon { display: block; }
-        #volumeSlider {
-            width: 120px; height: 8px;
-            -webkit-appearance: none; appearance: none;
-            background: rgba(255,255,255,0.3); border-radius: 4px;
-            outline: none; cursor: pointer;
-        }
-        #volumeSlider::-webkit-slider-thumb {
-            -webkit-appearance: none; appearance: none;
-            width: 20px; height: 20px;
-            background: #ffffff; border-radius: 50%; cursor: pointer;
-        }
-        #volumeSlider::-moz-range-thumb {
-            width: 20px; height: 20px;
-            background: #ffffff; border-radius: 50%; cursor: pointer; border: none;
-        }
-        
-        /* Status indicator */
-        #statusMsg {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9);
-            color: white;
-            padding: 30px 50px;
-            border-radius: 15px;
-            font-size: 24px;
-            display: none;
-            z-index: 1500;
-        }
-        #statusMsg.show {
-            display: block;
-        }
-
-        /* Admin notice */
-        #adminNotice {
-            position: fixed;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255,0,0,0.9);
-            color: white;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-size: 16px;
-            display: none;
-            z-index: 1500;
+        body { 
+            background: #1a237e; 
+            color: white; 
+            font-family: Arial; 
+            padding: 50px;
             text-align: center;
-            max-width: 80%;
         }
-        #adminNotice.show {
-            display: block;
+        button { 
+            padding: 20px 40px; 
+            font-size: 20px; 
+            margin: 20px;
+            cursor: pointer;
+        }
+        .result {
+            margin: 20px;
+            padding: 20px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
-    <!-- Debug Panel -->
-    <div id="debugPanel"></div>
+    <h1>Audio Format Test</h1>
+    <p>Click each button to test what works:</p>
     
-    <!-- Status Message -->
-    <div id="statusMsg"></div>
+    <div>
+        <button onclick="testMP3()">Test MP3</button>
+        <button onclick="testAAC()">Test AAC</button>
+        <button onclick="testOgg()">Test OGG</button>
+        <button onclick="testWav()">Test WAV</button>
+    </div>
     
-    <!-- Admin Notice -->
-    <div id="adminNotice">
-        ⚠️ Audio streaming may be blocked by admin policies<br>
-        Check Google Admin Console → Device Settings → Content Settings
-    </div>
-
-    <!-- Start Screen for Kiosk Mode -->
-    <div id="startScreen">
-        <button id="startBtn">TAP TO START</button>
-        <button id="debugToggle">Show Debug Info</button>
-    </div>
-
-    <audio id="audio" preload="auto"></audio>
-
-    <div class="stations">
-        <button class="station-btn selected" data-src="https://somafm.com/groovesalad130.pls">1</button>
-        <button class="station-btn" data-src="https://somafm.com/dronezone130.pls">2</button>
-        <button class="station-btn" data-src="https://somafm.com/deepspaceone.pls">3</button>
-        <button class="station-btn" data-src="https://somafm.com/indiepop130.pls">4</button>
-        <button class="station-btn" data-src="https://somafm.com/beatblender130.pls">5</button>
-        <button class="station-btn" data-src="https://somafm.com/gsclassic130.pls">6</button>
-    </div>
-
-    <div class="play-container">
-        <button id="playBtn" aria-label="Play/Pause">
-            <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            <svg class="pause-icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-        </button>
-    </div>
-
-    <img id="logo" src="logo.png" alt="Logo">
-
-    <div class="volume-controls">
-        <button id="muteBtn" aria-label="Mute/Unmute">
-            <svg class="volume-icon" viewBox="0 0 24 24">
-                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-            </svg>
-            <svg class="muted-icon" viewBox="0 0 24 24">
-                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
-            </svg>
-        </button>
-        <input type="range" id="volumeSlider" min="0" max="100" value="80" aria-label="Volume">
-    </div>
-
+    <div class="result" id="result">Results will appear here...</div>
+    
+    <audio id="audio"></audio>
+    
     <script>
         const audio = document.getElementById('audio');
-        const playBtn = document.getElementById('playBtn');
-        const stationBtns = document.querySelectorAll('.station-btn');
-        const muteBtn = document.getElementById('muteBtn');
-        const volumeSlider = document.getElementById('volumeSlider');
-        const startScreen = document.getElementById('startScreen');
-        const startBtn = document.getElementById('startBtn');
-        const debugPanel = document.getElementById('debugPanel');
-        const debugToggle = document.getElementById('debugToggle');
-        const statusMsg = document.getElementById('statusMsg');
-        const adminNotice = document.getElementById('adminNotice');
-
-        let currentStation = stationBtns[0].dataset.src;
-        let isPlaying = false;
-        let audioInitialized = false;
-        let debugVisible = false;
-        let errorCount = 0;
-        audio.volume = 0.8;
-
-        // Debug logging function
-        function log(message, type = 'info') {
-            const timestamp = new Date().toLocaleTimeString();
-            const line = document.createElement('div');
-            line.className = `debug-line debug-${type}`;
-            line.textContent = `[${timestamp}] ${message}`;
-            debugPanel.appendChild(line);
-            debugPanel.scrollTop = debugPanel.scrollHeight;
-            
-            console.log(`[${type.toUpperCase()}] ${message}`);
+        const result = document.getElementById('result');
+        
+        function log(msg) {
+            result.innerHTML += msg + '<br>';
         }
-
-        // Show status message
-        function showStatus(message, duration = 3000) {
-            statusMsg.textContent = message;
-            statusMsg.classList.add('show');
-            setTimeout(() => {
-                statusMsg.classList.remove('show');
-            }, duration);
+        
+        function testMP3() {
+            log('Testing MP3...');
+            audio.src = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+            audio.play()
+                .then(() => log('✅ MP3 WORKS!'))
+                .catch(err => log('❌ MP3 FAILED: ' + err.message));
         }
-
-        // Toggle debug panel
-        debugToggle.addEventListener('click', function() {
-            debugVisible = !debugVisible;
-            if (debugVisible) {
-                debugPanel.classList.add('show');
-                debugToggle.textContent = 'Hide Debug Info';
-                log('Debug panel opened', 'info');
-            } else {
-                debugPanel.classList.remove('show');
-                debugToggle.textContent = 'Show Debug Info';
-            }
-        });
-
-        log('Page loaded - Using PLS playlist files', 'success');
-        log(`Browser: ${navigator.userAgent.substring(0, 80)}...`, 'info');
         
-        // Initialize audio context on user gesture
-        startBtn.addEventListener('click', async function() {
-            log('TAP TO START clicked', 'info');
-            showStatus('Initializing audio...');
-            
-            try {
-                audio.src = currentStation;
-                log(`Setting source: ${currentStation}`, 'info');
-                
-                audio.muted = false;
-                audio.volume = 0.8;
-                log('Audio unmuted, volume set to 0.8', 'success');
-                
-                audioInitialized = true;
-                audio.load();
-                log('Audio load() called', 'info');
-                
-                await new Promise((resolve, reject) => {
-                    const timeout = setTimeout(() => reject('Load timeout'), 5000);
-                    audio.addEventListener('loadstart', function() {
-                        clearTimeout(timeout);
-                        resolve();
-                    }, { once: true });
-                    audio.addEventListener('error', function() {
-                        clearTimeout(timeout);
-                        reject('Load error');
-                    }, { once: true });
-                });
-                
-                log('Audio load started successfully', 'success');
-                startScreen.classList.add('hidden');
-                showStatus('Ready! Click PLAY button', 2000);
-                log('Initialization complete', 'success');
-                
-            } catch (err) {
-                log(`Initialization error: ${err}`, 'error');
-                showStatus('Error - May be blocked by admin', 3000);
-                adminNotice.classList.add('show');
-                setTimeout(() => adminNotice.classList.remove('show'), 10000);
-            }
-        });
-
-        // Wake Lock
-        let wakeLock = null;
-        async function requestWakeLock() {
-            if ('wakeLock' in navigator) {
-                try { 
-                    wakeLock = await navigator.wakeLock.request('screen');
-                    log('Wake Lock acquired', 'success');
-                }
-                catch (err) { 
-                    log(`Wake Lock error: ${err.message}`, 'error');
-                }
-            }
+        function testAAC() {
+            log('Testing AAC...');
+            audio.src = 'https://ice1.somafm.com/groovesalad-128-aac';
+            audio.play()
+                .then(() => log('✅ AAC WORKS!'))
+                .catch(err => log('❌ AAC FAILED: ' + err.message));
         }
-        async function releaseWakeLock() {
-            if (wakeLock) { 
-                await wakeLock.release(); 
-                wakeLock = null;
-                log('Wake Lock released', 'info');
-            }
+        
+        function testOgg() {
+            log('Testing OGG...');
+            audio.src = 'https://www.soundhelix.com/examples/ogg/SoundHelix-Song-1.ogg';
+            audio.play()
+                .then(() => log('✅ OGG WORKS!'))
+                .catch(err => log('❌ OGG FAILED: ' + err.message));
         }
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && isPlaying) requestWakeLock();
-        });
-
-        // Audio events
-        audio.addEventListener('playing', () => {
-            isPlaying = true;
-            playBtn.classList.add('playing');
-            errorCount = 0;
-            log('▶️ Audio PLAYING', 'success');
-            showStatus('Playing...', 1000);
-        });
         
-        audio.addEventListener('pause', () => {
-            isPlaying = false;
-            playBtn.classList.remove('playing');
-            log('⏸️ Audio PAUSED', 'info');
-        });
+        function testWav() {
+            log('Testing WAV...');
+            audio.src = 'https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3';
+            audio.play()
+                .then(() => log('✅ WAV/Simple MP3 WORKS!'))
+                .catch(err => log('❌ WAV FAILED: ' + err.message));
+        }
         
-        audio.addEventListener('error', e => {
-            const errorMessages = {
-                1: 'ABORTED - May be blocked by policy',
-                2: 'NETWORK - Connection/firewall issue',
-                3: 'DECODE - Format error',
-                4: 'NOT_SUPPORTED - Format blocked by admin'
-            };
-            const errorMsg = audio.error ? errorMessages[audio.error.code] : 'Unknown error';
-            log(`❌ ERROR: ${errorMsg}`, 'error');
-            
-            errorCount++;
-            if (errorCount >= 2) {
-                showStatus('Streaming blocked - Check admin settings', 5000);
-                adminNotice.classList.add('show');
-            } else {
-                showStatus(`Error: ${errorMsg}`, 3000);
-            }
-            
-            isPlaying = false;
-            playBtn.classList.remove('playing');
-        });
-        
-        audio.addEventListener('loadstart', () => log('Load start', 'info'));
-        audio.addEventListener('loadedmetadata', () => log('Metadata loaded', 'success'));
-        audio.addEventListener('loadeddata', () => log('Data loaded', 'success'));
-        audio.addEventListener('canplay', () => log('Can play – ready', 'success'));
-        audio.addEventListener('canplaythrough', () => log('Can play through', 'success'));
-
-        // Station selection
-        stationBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                if (!audioInitialized) {
-                    showStatus('Click TAP TO START first', 2000);
-                    return;
-                }
-
-                stationBtns.forEach(b => b.classList.remove('selected'));
-                this.classList.add('selected');
-                currentStation = this.dataset.src;
-                log(`Station changed to: ${currentStation}`, 'info');
-
-                if (isPlaying) {
-                    audio.src = currentStation;
-                    audio.load();
-                    audio.play().catch(err => {
-                        log(`Station change error: ${err.message}`, 'error');
-                        playBtn.classList.remove('playing');
-                        isPlaying = false;
-                    });
-                }
-            });
-        });
-
-        // Play button
-        playBtn.addEventListener('click', async function() {
-            log('Play button clicked', 'info');
-            
-            if (!audioInitialized) {
-                showStatus('Click TAP TO START first', 2000);
-                return;
-            }
-
-            if (!isPlaying) {
-                log('Starting playback...', 'info');
-                showStatus('Loading stream...');
-                
-                audio.muted = false;
-                audio.volume = volumeSlider.value / 100;
-                
-                try {
-                    if (!audio.src || !audio.src.includes(currentStation)) {
-                        audio.src = currentStation;
-                        audio.load();
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                    }
-                    
-                    log('Calling play()...', 'info');
-                    await audio.play();
-                    await requestWakeLock();
-                    log('✅ Playback started', 'success');
-                    
-                } catch (err) {
-                    log(`❌ Play failed: ${err.name} - ${err.message}`, 'error');
-                    showStatus('Play failed - May be blocked', 3000);
-                    adminNotice.classList.add('show');
-                }
-            } else {
-                log('Pausing', 'info');
-                audio.pause();
-                await releaseWakeLock();
-            }
-        });
-
-        // Volume & mute
-        let previousVolume = audio.volume;
-        volumeSlider.addEventListener('input', function() {
-            if (!audioInitialized) return;
-            audio.volume = this.value / 100;
-            audio.muted = false;
-            if (audio.volume > 0) {
-                muteBtn.classList.remove('muted');
-                previousVolume = audio.volume;
-            } else {
-                muteBtn.classList.add('muted');
-            }
-        });
-        
-        muteBtn.addEventListener('click', function() {
-            if (!audioInitialized) return;
-            if (audio.muted || audio.volume === 0) {
-                audio.muted = false;
-                audio.volume = previousVolume || 0.8;
-                volumeSlider.value = audio.volume * 100;
-                muteBtn.classList.remove('muted');
-            } else {
-                previousVolume = audio.volume;
-                audio.muted = true;
-                muteBtn.classList.add('muted');
-            }
+        audio.addEventListener('error', (e) => {
+            log('❌ ERROR: ' + (audio.error ? audio.error.code : 'Unknown'));
         });
     </script>
 </body>
