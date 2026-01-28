@@ -15,6 +15,42 @@
             align-items: center;
             font-family: system-ui, sans-serif;
         }
+        
+        /* Start Screen for Kiosk Mode */
+        #startScreen {
+            position: fixed;
+            inset: 0;
+            background-color: #1a237e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            gap: 20px;
+        }
+        #startScreen.hidden {
+            display: none;
+        }
+        #startBtn {
+            padding: 40px 80px;
+            font-size: 32px;
+            font-weight: bold;
+            background: #ffffff;
+            color: #1a237e;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        #startBtn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        }
+        #startBtn:active {
+            transform: scale(0.98);
+        }
+        
         .stations {
             display: flex;
             gap: 20px;
@@ -89,6 +125,11 @@
     </style>
 </head>
 <body>
+    <!-- Start Screen for Kiosk Mode -->
+    <div id="startScreen">
+        <button id="startBtn">TAP TO START</button>
+    </div>
+
     <audio id="audio" preload="auto" crossorigin="anonymous"></audio>
 
     <div class="stations">
@@ -127,25 +168,64 @@
         const stationBtns = document.querySelectorAll('.station-btn');
         const muteBtn = document.getElementById('muteBtn');
         const volumeSlider = document.getElementById('volumeSlider');
+        const startScreen = document.getElementById('startScreen');
+        const startBtn = document.getElementById('startBtn');
 
         let currentStation = stationBtns[0].dataset.src;
         let isPlaying = false;
+        let audioInitialized = false;
         audio.volume = 0.8;
-        audio.muted = true; // Start muted – unmute on gesture
+        audio.muted = true; // Start muted until user interaction
 
         // Pre-set initial source
         audio.src = currentStation;
+
+        // Initialize audio context on user gesture (for kiosk mode)
+        startBtn.addEventListener('click', async function() {
+            console.log('Initializing audio...');
+            
+            // Unlock audio context
+            audio.muted = false;
+            audio.volume = 0.8;
+            audioInitialized = true;
+            
+            // Try to play and immediately pause to unlock audio
+            try {
+                await audio.play();
+                audio.pause();
+                audio.currentTime = 0;
+                console.log('Audio context unlocked');
+            } catch (err) {
+                console.log('Audio unlock attempt:', err);
+            }
+            
+            // Hide start screen
+            startScreen.classList.add('hidden');
+            
+            // Optionally auto-play after unlock
+            // Uncomment the next 3 lines if you want music to start immediately
+            // audio.play().then(() => {
+            //     requestWakeLock();
+            // }).catch(err => console.error('Auto-play failed:', err));
+        });
 
         // Wake Lock
         let wakeLock = null;
         async function requestWakeLock() {
             if ('wakeLock' in navigator) {
-                try { wakeLock = await navigator.wakeLock.request('screen'); }
+                try { 
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake Lock acquired');
+                }
                 catch (err) { console.log('Wake Lock error:', err); }
             }
         }
         async function releaseWakeLock() {
-            if (wakeLock) { await wakeLock.release(); wakeLock = null; }
+            if (wakeLock) { 
+                await wakeLock.release(); 
+                wakeLock = null;
+                console.log('Wake Lock released');
+            }
         }
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible' && isPlaying) requestWakeLock();
@@ -190,11 +270,16 @@
         });
 
         playBtn.addEventListener('click', function() {
+            if (!audioInitialized) {
+                console.warn('Audio not initialized – click "TAP TO START" first');
+                return;
+            }
+
             if (!isPlaying) {
                 playBtn.classList.add('playing'); // Optimistic UI
                 audio.src = currentStation;
                 audio.load();
-                audio.muted = false; // Critical: unmute on gesture
+                audio.muted = false; // Ensure unmuted
 
                 audio.play()
                     .then(() => {
@@ -206,12 +291,10 @@
                         setTimeout(() => {
                             playBtn.classList.remove('playing');
                         }, 1200); // Longer flash to indicate attempt
-                        audio.muted = true;
                     });
             } else {
                 audio.pause();
                 audio.src = ''; // Clear to stop buffering
-                audio.muted = true;
                 releaseWakeLock();
                 playBtn.classList.remove('playing');
                 isPlaying = false;
@@ -221,6 +304,8 @@
         // Volume & mute
         let previousVolume = audio.volume;
         volumeSlider.addEventListener('input', function() {
+            if (!audioInitialized) return;
+            
             audio.volume = this.value / 100;
             audio.muted = false;
             if (audio.volume > 0) {
@@ -231,6 +316,8 @@
             }
         });
         muteBtn.addEventListener('click', function() {
+            if (!audioInitialized) return;
+            
             if (audio.muted || audio.volume === 0) {
                 audio.muted = false;
                 audio.volume = previousVolume || 0.8;
