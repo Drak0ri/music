@@ -8,20 +8,21 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-color: #1a237e;
+            background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
             height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             font-family: system-ui, sans-serif;
-            overflow-y: auto;
+            overflow: hidden;
         }
         
         /* Start Screen for Kiosk Mode */
         #startScreen {
             position: fixed;
             inset: 0;
-            background-color: #1a237e;
+            background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -53,138 +54,254 @@
         }
         
         .header {
-            margin-top: 40px;
-            margin-bottom: 20px;
+            position: absolute;
+            top: 30px;
             text-align: center;
             color: #ffffff;
+            z-index: 10;
         }
         .header h1 {
             font-size: 36px;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
         .header p {
-            font-size: 18px;
-            opacity: 0.8;
-        }
-        
-        .stations-container {
-            width: 90%;
-            max-width: 900px;
-            margin-bottom: 30px;
-        }
-        
-        .category {
-            margin-bottom: 30px;
-        }
-        
-        .category-title {
-            color: #ffffff;
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-align: center;
+            font-size: 16px;
             opacity: 0.9;
         }
         
-        .stations {
+        /* Circular layout container */
+        .circle-container {
+            position: relative;
+            width: 800px;
+            height: 800px;
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            align-items: center;
             justify-content: center;
         }
         
-        .station-btn {
-            min-width: 140px;
-            padding: 15px 20px;
-            border-radius: 25px;
-            border: 3px solid rgba(255,255,255,0.3);
-            background-color: rgba(255,255,255,0.1);
+        /* Center play button */
+        .play-container {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            z-index: 5;
+        }
+        
+        #nowPlaying {
             color: #ffffff;
             font-size: 16px;
             font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            max-width: 200px;
             text-align: center;
+            opacity: 0.95;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            line-height: 1.3;
+        }
+        
+        #playBtn {
+            width: 180px; 
+            height: 180px;
+            border-radius: 50%; 
+            border: none;
+            background-color: #ffffff;
+            cursor: pointer;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        #playBtn:hover { 
+            transform: scale(1.08); 
+            box-shadow: 0 12px 50px rgba(0,0,0,0.5); 
+        }
+        #playBtn:active { 
+            transform: scale(0.98); 
+        }
+        #playBtn svg { 
+            width: 70px; 
+            height: 70px; 
+            fill: #1a237e; 
+        }
+        #playBtn .pause-icon { display: none; }
+        #playBtn.playing .play-icon { display: none; }
+        #playBtn.playing .pause-icon { display: block; }
+        
+        /* Station buttons arranged in circle */
+        .station-btn {
+            position: absolute;
+            min-width: 130px;
+            max-width: 150px;
+            padding: 12px 18px;
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.4);
+            background-color: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         .station-btn:hover { 
-            background-color: rgba(255,255,255,0.2); 
-            border-color: rgba(255,255,255,0.5);
-            transform: translateY(-2px);
+            background-color: rgba(255,255,255,0.25); 
+            border-color: rgba(255,255,255,0.7);
+            transform: scale(1.08);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
         .station-btn.selected { 
             background-color: #ffffff; 
             color: #1a237e; 
             border-color: #ffffff; 
-            box-shadow: 0 4px 20px rgba(255,255,255,0.4);
+            box-shadow: 0 6px 25px rgba(255,255,255,0.5);
+            transform: scale(1.1);
         }
         
-        .play-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            margin: 30px 0;
-        }
+        /* Position buttons in a circle - 24 buttons */
+        .station-btn:nth-child(1) { top: 0%; left: 50%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(2) { top: 6%; left: 70%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(3) { top: 18%; left: 85%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(4) { top: 33%; left: 93%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(5) { top: 50%; left: 97%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(6) { top: 67%; left: 93%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(7) { top: 82%; left: 85%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(8) { top: 94%; left: 70%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(9) { top: 100%; left: 50%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(10) { top: 94%; left: 30%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(11) { top: 82%; left: 15%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(12) { top: 67%; left: 7%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(13) { top: 50%; left: 3%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(14) { top: 33%; left: 7%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(15) { top: 18%; left: 15%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(16) { top: 6%; left: 30%; transform: translate(-50%, -50%); }
         
-        #nowPlaying {
-            color: #ffffff;
-            font-size: 18px;
-            font-weight: bold;
-            min-height: 25px;
-            text-align: center;
-            opacity: 0.9;
-        }
+        /* Adjust selected state to maintain position */
+        .station-btn.selected:nth-child(1) { transform: translate(-50%, -50%) scale(1.1); }
+        .station-btn.selected:nth-child(2) { transform: translate(-50%, -50%) scale(1.1); }
+        .station-btn.selected:nth-child(3) { transform: translate(-50%, -50%) scale(1.1); }
+        .station-btn.selected:nth-child(4) { transform: translate(-50%, -50%) scale(1.1); }
+        .station-btn.selected:nth-child(5) { transform: translate(-50%, -50%) scale(1.1); }
+        .station-btn.selected:nth-child(6) { transform: translate(-50%, -50%) scale(1.1); }
+        .station-btn.selected:nth-child(7) { transform: translate(-50%, -50%) scale(1.1); }
+        .station-btn.selected:nth-child(8) { transform: translate(-50%, -50%) scale(1.1); }
+        .station-btn.selected:nth-child(9) { transform: translate(-50%, -50%) scale(1.1); }
+        .station-btn.selected:nth-child(10) { transform: translate(-50%, -50%) scale(1.1); }
+        .station-btn.selected:nth-child(11) { transform: translate(-50%, -50%) scale(1.1); }
+        .station-btn.selected:nth-child(12) { transform: translate(-50%, -50%) scale(1.1); }
+        .station-btn.selected:nth-child(13) { transform: translate(-50%, -50%) scale(1.1); }
+        .station-btn.selected:nth-child(14) { transform: translate(-50%, -50%) scale(1.1); }
+        .station-btn.selected:nth-child(15) { transform: translate(-50%, -50%) scale(1.1); }
+        .station-btn.selected:nth-child(16) { transform: translate(-50%, -50%) scale(1.1); }
         
-        #playBtn {
-            width: 200px; height: 200px;
-            border-radius: 50%; border: none;
-            background-color: #ffffff;
-            cursor: pointer;
-            display: flex; justify-content: center; align-items: center;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        }
-        #playBtn:hover { transform: scale(1.05); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
-        #playBtn:active { transform: scale(0.98); }
-        #playBtn svg { width: 80px; height: 80px; fill: #1a237e; }
-        #playBtn .pause-icon { display: none; }
-        #playBtn.playing .play-icon { display: none; }
-        #playBtn.playing .pause-icon { display: block; }
+        .station-btn:hover:nth-child(1) { transform: translate(-50%, -50%) scale(1.08); }
+        .station-btn:hover:nth-child(2) { transform: translate(-50%, -50%) scale(1.08); }
+        .station-btn:hover:nth-child(3) { transform: translate(-50%, -50%) scale(1.08); }
+        .station-btn:hover:nth-child(4) { transform: translate(-50%, -50%) scale(1.08); }
+        .station-btn:hover:nth-child(5) { transform: translate(-50%, -50%) scale(1.08); }
+        .station-btn:hover:nth-child(6) { transform: translate(-50%, -50%) scale(1.08); }
+        .station-btn:hover:nth-child(7) { transform: translate(-50%, -50%) scale(1.08); }
+        .station-btn:hover:nth-child(8) { transform: translate(-50%, -50%) scale(1.08); }
+        .station-btn:hover:nth-child(9) { transform: translate(-50%, -50%) scale(1.08); }
+        .station-btn:hover:nth-child(10) { transform: translate(-50%, -50%) scale(1.08); }
+        .station-btn:hover:nth-child(11) { transform: translate(-50%, -50%) scale(1.08); }
+        .station-btn:hover:nth-child(12) { transform: translate(-50%, -50%) scale(1.08); }
+        .station-btn:hover:nth-child(13) { transform: translate(-50%, -50%) scale(1.08); }
+        .station-btn:hover:nth-child(14) { transform: translate(-50%, -50%) scale(1.08); }
+        .station-btn:hover:nth-child(15) { transform: translate(-50%, -50%) scale(1.08); }
+        .station-btn:hover:nth-child(16) { transform: translate(-50%, -50%) scale(1.08); }
         
-        #logo { position: fixed; bottom: 20px; left: 20px; height: 60px; opacity: 0.9; }
+        #logo { 
+            position: fixed; 
+            bottom: 20px; 
+            left: 20px; 
+            height: 60px; 
+            opacity: 0.9; 
+        }
         
         .volume-controls {
-            position: fixed; bottom: 20px; right: 20px;
-            display: flex; align-items: center; gap: 12px;
+            position: fixed; 
+            bottom: 20px; 
+            right: 20px;
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
         }
         #muteBtn {
-            width: 50px; height: 50px;
-            border-radius: 50%; border: 2px solid rgba(255,255,255,0.5);
-            background-color: rgba(255,255,255,0.1);
+            width: 50px; 
+            height: 50px;
+            border-radius: 50%; 
+            border: 2px solid rgba(255,255,255,0.5);
+            background-color: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
             cursor: pointer;
-            display: flex; justify-content: center; align-items: center;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
             transition: all 0.2s ease;
         }
-        #muteBtn:hover { background-color: rgba(255,255,255,0.2); }
-        #muteBtn svg { width: 24px; height: 24px; fill: #ffffff; }
+        #muteBtn:hover { 
+            background-color: rgba(255,255,255,0.25); 
+        }
+        #muteBtn svg { 
+            width: 24px; 
+            height: 24px; 
+            fill: #ffffff; 
+        }
         #muteBtn .muted-icon { display: none; }
         #muteBtn.muted .volume-icon { display: none; }
         #muteBtn.muted .muted-icon { display: block; }
         #volumeSlider {
-            width: 120px; height: 8px;
-            -webkit-appearance: none; appearance: none;
-            background: rgba(255,255,255,0.3); border-radius: 4px;
-            outline: none; cursor: pointer;
+            width: 120px; 
+            height: 8px;
+            -webkit-appearance: none; 
+            appearance: none;
+            background: rgba(255,255,255,0.3); 
+            border-radius: 4px;
+            outline: none; 
+            cursor: pointer;
         }
         #volumeSlider::-webkit-slider-thumb {
-            -webkit-appearance: none; appearance: none;
-            width: 20px; height: 20px;
-            background: #ffffff; border-radius: 50%; cursor: pointer;
+            -webkit-appearance: none; 
+            appearance: none;
+            width: 20px; 
+            height: 20px;
+            background: #ffffff; 
+            border-radius: 50%; 
+            cursor: pointer;
         }
         #volumeSlider::-moz-range-thumb {
-            width: 20px; height: 20px;
-            background: #ffffff; border-radius: 50%; cursor: pointer; border: none;
+            width: 20px; 
+            height: 20px;
+            background: #ffffff; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            border: none;
+        }
+
+        @media (max-width: 900px) {
+            .circle-container {
+                width: 600px;
+                height: 600px;
+            }
+            .station-btn {
+                min-width: 100px;
+                max-width: 120px;
+                font-size: 12px;
+                padding: 10px 14px;
+            }
+            #playBtn {
+                width: 140px;
+                height: 140px;
+            }
+            #playBtn svg {
+                width: 55px;
+                height: 55px;
+            }
         }
     </style>
 </head>
@@ -201,63 +318,33 @@
         <p>Select your perfect focus soundtrack</p>
     </div>
 
-    <div class="stations-container">
-        <!-- Ambient & Chill -->
-        <div class="category">
-            <div class="category-title">🌙 Ambient & Chill</div>
-            <div class="stations">
-                <button class="station-btn selected" data-src="https://ice1.somafm.com/groovesalad-128-mp3" data-name="Groove Salad">Groove Salad</button>
-                <button class="station-btn" data-src="https://ice1.somafm.com/dronezone-256-mp3" data-name="Drone Zone">Drone Zone</button>
-                <button class="station-btn" data-src="https://ice1.somafm.com/deepspaceone-128-mp3" data-name="Deep Space">Deep Space</button>
-                <button class="station-btn" data-src="https://ice1.somafm.com/spacestation-128-mp3" data-name="Space Station">Space Station</button>
-            </div>
-        </div>
+    <div class="circle-container">
+        <!-- Station buttons arranged in a circle (16 stations) -->
+        <button class="station-btn selected" data-src="https://ice1.somafm.com/groovesalad-128-mp3" data-name="Groove Salad">🌿 Groove Salad</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/dronezone-256-mp3" data-name="Drone Zone">🌌 Drone Zone</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/deepspaceone-128-mp3" data-name="Deep Space">🚀 Deep Space</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/spacestation-128-mp3" data-name="Space Station">🛸 Space Station</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/beatblender-128-mp3" data-name="Beat Blender">🎧 Beat Blender</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/defcon-256-mp3" data-name="DEF CON Radio">⚡ DEF CON</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/thetrip-128-mp3" data-name="The Trip">✨ The Trip</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/fluid-128-mp3" data-name="Fluid">💧 Fluid</button>
+        <button class="station-btn" data-src="https://stream.radioparadise.com/mellow-320" data-name="Radio Paradise Mellow">🎵 RP Mellow</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/sf1033-128-mp3" data-name="SF 10-33">📻 SF 10-33</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/synphaera-256-mp3" data-name="Synphaera">🎹 Synphaera</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/lush-128-mp3" data-name="Lush">🌺 Lush</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/indiepop-128-mp3" data-name="Indie Pop">🎸 Indie Pop</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/bagel-128-mp3" data-name="BAGeL Radio">🥯 BAGeL</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/illstreet-128-mp3" data-name="Illinois Street">🎤 Illinois St</button>
+        <button class="station-btn" data-src="just-relax-11157.mp3" data-name="Just Relax">🎼 Just Relax</button>
 
-        <!-- Lo-Fi & Beats -->
-        <div class="category">
-            <div class="category-title">🎧 Lo-Fi & Beats</div>
-            <div class="stations">
-                <button class="station-btn" data-src="https://ice1.somafm.com/beatblender-128-mp3" data-name="Beat Blender">Beat Blender</button>
-                <button class="station-btn" data-src="https://ice1.somafm.com/dubstep-256-mp3" data-name="Dub Step">Dub Step</button>
-                <button class="station-btn" data-src="https://ice1.somafm.com/bagel-128-mp3" data-name="BAGeL Radio">BAGeL Radio</button>
-            </div>
+        <!-- Center play button -->
+        <div class="play-container">
+            <button id="playBtn" aria-label="Play/Pause">
+                <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <svg class="pause-icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <div id="nowPlaying">Groove Salad</div>
         </div>
-
-        <!-- Classical & Instrumental -->
-        <div class="category">
-            <div class="category-title">🎻 Classical & Instrumental</div>
-            <div class="stations">
-                <button class="station-btn" data-src="https://stream.radioparadise.com/mellow-320" data-name="Radio Paradise Mellow">RP Mellow</button>
-                <button class="station-btn" data-src="https://ice1.somafm.com/sf1033-128-mp3" data-name="SF 10-33">SF 10-33</button>
-                <button class="station-btn" data-src="https://ice1.somafm.com/synphaera-256-mp3" data-name="Synphaera">Synphaera</button>
-            </div>
-        </div>
-
-        <!-- Focus & Productivity -->
-        <div class="category">
-            <div class="category-title">⚡ Focus & Productivity</div>
-            <div class="stations">
-                <button class="station-btn" data-src="https://ice1.somafm.com/defcon-256-mp3" data-name="DEF CON Radio">DEF CON</button>
-                <button class="station-btn" data-src="https://ice1.somafm.com/thetrip-128-mp3" data-name="The Trip">The Trip</button>
-                <button class="station-btn" data-src="https://ice1.somafm.com/fluid-128-mp3" data-name="Fluid">Fluid</button>
-            </div>
-        </div>
-
-        <!-- Your Music -->
-        <div class="category">
-            <div class="category-title">🎼 Your Music</div>
-            <div class="stations">
-                <button class="station-btn" data-src="just-relax-11157.mp3" data-name="Just Relax">Just Relax</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="play-container">
-        <div id="nowPlaying">Groove Salad</div>
-        <button id="playBtn" aria-label="Play/Pause">
-            <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            <svg class="pause-icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-        </button>
     </div>
 
     <img id="logo" src="logo.png" alt="Logo">
@@ -292,7 +379,7 @@
 
         // Update now playing display
         function updateNowPlaying(name) {
-            nowPlaying.textContent = `Now Playing: ${name}`;
+            nowPlaying.textContent = name;
         }
 
         // Initialize audio context on user gesture (for kiosk mode)
