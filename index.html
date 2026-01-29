@@ -160,7 +160,7 @@
         <button class="station-btn" data-src="https://ice1.somafm.com/indiepop-128-mp3">4</button>
         <button class="station-btn" data-src="https://ice1.somafm.com/beatblender-128-mp3">5</button>
         <button class="station-btn" data-src="https://ice1.somafm.com/gsclassic-128-mp3">6</button>
-        <button class="station-btn" data-src="https://drive.google.com/uc?export=download&id=1SpLuXX3uGr9HHuLIUPXTGEKGvhLky2OS">7</button>
+        <button class="station-btn" data-src="https://drive.google.com/uc?export=download&id=1SpLuXX3uGr9HHuLIUPXTGEKGvhLky2OS" data-is-gdrive="true">7</button>
     </div>
 
     <div class="play-container">
@@ -274,7 +274,7 @@
                 
                 // Enhanced logging for Google Drive station
                 const selectedStation = document.querySelector('.station-btn.selected');
-                if (selectedStation && selectedStation.textContent === '7') {
+                if (selectedStation && selectedStation.dataset.isGdrive === 'true') {
                     console.error('❌ Google Drive station error detected');
                     console.error('🔍 Error type:', errorMessages[audio.error.code] || 'Unknown');
                     if (audio.error.code === 2) {
@@ -311,7 +311,7 @@
                 currentStation = this.dataset.src;
 
                 // Enhanced logging for Google Drive station
-                if (this.textContent === '7') {
+                if (this.dataset.isGdrive === 'true') {
                     console.log('🎵 Google Drive station selected');
                     console.log('📍 URL:', currentStation);
                     console.log('🔍 Checking for potential issues:');
@@ -328,7 +328,7 @@
                     audio.play().catch(err => {
                         console.error('Station change play error:', err);
                         // Enhanced error logging for Google Drive
-                        if (this.textContent === '7') {
+                        if (this.dataset.isGdrive === 'true') {
                             console.error('❌ Google Drive playback failed');
                             console.error('🔍 Possible causes:');
                             console.error('  1. CORS policy blocking the request');
@@ -414,10 +414,18 @@
         testGdriveBtn.addEventListener('click', async function() {
             console.log('🎵 TEST GDRIVE button clicked');
             
+            // Find the Google Drive station
+            const gdriveStation = Array.from(stationBtns).find(btn => btn.dataset.isGdrive === 'true');
+            if (!gdriveStation) {
+                console.error('❌ Google Drive station not found');
+                return;
+            }
+            
+            const gdriveSrc = gdriveStation.dataset.src;
+            
             // If audio not initialized, initialize it first
             if (!audioInitialized) {
                 console.log('⚠️ Audio not initialized, initializing now...');
-                const gdriveSrc = 'https://drive.google.com/uc?export=download&id=1SpLuXX3uGr9HHuLIUPXTGEKGvhLky2OS';
                 audio.src = gdriveSrc;
                 audio.muted = false;
                 audio.volume = 0.8;
@@ -428,11 +436,10 @@
                 console.log('✅ Audio initialized');
             }
             
-            // Select station 7 (Google Drive)
+            // Select Google Drive station
             stationBtns.forEach(b => b.classList.remove('selected'));
-            const station7 = stationBtns[6]; // 7th button (0-indexed)
-            station7.classList.add('selected');
-            currentStation = station7.dataset.src;
+            gdriveStation.classList.add('selected');
+            currentStation = gdriveSrc;
             
             console.log('📍 Selected Google Drive station');
             console.log('🔗 URL:', currentStation);
