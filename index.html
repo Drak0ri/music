@@ -10,135 +10,51 @@
         
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
         body {
-            background: linear-gradient(135deg, #a8c0ff 0%, #c2e9fb 25%, #667eea 50%, #764ba2 75%, #f093fb 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 20s ease infinite;
-            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             display: flex;
             flex-direction: column;
             font-family: 'Poppins', sans-serif;
-            overflow-x: hidden;
         }
         
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        /* Floating particles */
-        .particle {
-            position: fixed;
-            width: 3px;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: float 30s infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100vh) translateX(40px); opacity: 0; }
-        }
-        
-        /* Start Screen */
-        #startScreen {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            background-size: 200% 200%;
-            animation: gradientShift 12s ease infinite;
+        /* Main container - responsive height */
+        .container {
+            flex: 1;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
-            gap: 30px;
-        }
-        #startScreen.hidden { display: none; }
-        
-        #startBtn {
-            padding: 50px 100px;
-            font-size: 42px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
-            color: #667eea;
-            border: none;
-            border-radius: 60px;
-            cursor: pointer;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.4), 0 0 100px rgba(255,255,255,0.3);
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            animation: pulse 2s ease infinite;
+            padding: 20px;
+            min-height: 0;
         }
         
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-        
-        #startBtn:hover {
-            transform: scale(1.15);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 150px rgba(255,255,255,0.5);
-        }
-        
-        /* Header */
-        .header {
-            text-align: center;
-            color: #ffffff;
-            padding: 30px 20px 20px 20px;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        .header h1 {
-            font-size: 52px;
-            font-weight: 800;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #fff, #f0f0f0, #fff);
-            background-size: 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shimmer 3s linear infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { background-position: -200%; }
-            100% { background-position: 200%; }
-        }
-        
-        .header p {
-            font-size: 22px;
-            font-weight: 600;
-            opacity: 0.95;
-        }
-        
-        /* Main grid container */
+        /* Main grid container - fully responsive */
         .main-grid {
-            flex: 1;
             display: grid;
             grid-template-columns: repeat(6, 1fr);
             grid-template-rows: repeat(4, 1fr);
-            gap: 20px;
-            padding: 20px 40px 120px 40px;
-            max-width: 1800px;
+            gap: clamp(15px, 2vw, 25px);
             width: 100%;
-            margin: 0 auto;
+            height: 100%;
+            max-width: 1800px;
+            max-height: 900px;
         }
         
-        /* Station buttons */
+        /* Station buttons - responsive sizing */
         .station-btn {
-            min-height: 90px;
-            padding: 20px 24px;
-            border-radius: 30px;
+            min-height: 0;
+            padding: clamp(12px, 2vh, 22px) clamp(12px, 1.5vw, 26px);
+            border-radius: clamp(20px, 3vw, 32px);
             border: 3px solid rgba(255,255,255,0.5);
             background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15));
             backdrop-filter: blur(20px);
             color: #ffffff;
-            font-size: 17px;
+            font-size: clamp(14px, 1.2vw, 18px);
             font-weight: 700;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -150,12 +66,12 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: clamp(4px, 0.5vh, 8px);
             line-height: 1.3;
         }
         
         .station-btn small {
-            font-size: 13px;
+            font-size: clamp(11px, 1vw, 14px);
             font-weight: 600;
             opacity: 0.9;
         }
@@ -175,15 +91,9 @@
             box-shadow: 0 12px 40px rgba(255,255,255,0.7), 
                         0 0 70px rgba(102,126,234,0.9);
             transform: scale(1.1) translateY(-5px);
-            animation: selectedGlow 2s ease infinite;
         }
         
-        @keyframes selectedGlow {
-            0%, 100% { box-shadow: 0 12px 40px rgba(255,255,255,0.7), 0 0 70px rgba(102,126,234,0.9); }
-            50% { box-shadow: 0 12px 40px rgba(255,255,255,0.9), 0 0 100px rgba(102,126,234,1); }
-        }
-        
-        /* Center play button - spans 2x2 grid cells in the middle */
+        /* Center play button - responsive sizing */
         .play-container {
             grid-column: 3 / 5;
             grid-row: 2 / 4;
@@ -191,13 +101,13 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: clamp(10px, 1.5vh, 15px);
             z-index: 50;
         }
         
         #playBtn {
-            width: 180px; 
-            height: 180px;
+            width: clamp(120px, 15vw, 180px);
+            height: clamp(120px, 15vw, 180px);
             border-radius: 50%; 
             border: 5px solid rgba(255,255,255,0.6);
             background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
@@ -208,21 +118,6 @@
             transition: all 0.4s ease;
             box-shadow: 0 15px 50px rgba(0,0,0,0.5), 
                         0 0 80px rgba(255,255,255,0.6);
-            position: relative;
-        }
-        
-        #playBtn::before {
-            content: '';
-            position: absolute;
-            inset: -50%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.4), transparent);
-            transform: rotate(45deg);
-            animation: shine 4s infinite;
-        }
-        
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
         
         #playBtn:hover { 
@@ -231,41 +126,43 @@
                         0 0 120px rgba(255,255,255,0.8);
         }
         
+        #playBtn:active {
+            transform: scale(1.05);
+        }
+        
         #playBtn svg { 
-            width: 75px; 
-            height: 75px; 
+            width: clamp(50px, 6vw, 75px);
+            height: clamp(50px, 6vw, 75px);
             fill: #667eea;
             filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
-            z-index: 1;
         }
         
         #playBtn .pause-icon { display: none; }
         #playBtn.playing .play-icon { display: none; }
         #playBtn.playing .pause-icon { display: block; }
         #playBtn.playing {
-            animation: playingPulse 2s ease infinite;
-        }
-        
-        @keyframes playingPulse {
-            0%, 100% { box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 80px rgba(255,255,255,0.6); }
-            50% { box-shadow: 0 15px 50px rgba(0,0,0,0.5), 0 0 130px rgba(102,126,234,1); }
+            box-shadow: 0 15px 50px rgba(0,0,0,0.5), 
+                        0 0 130px rgba(102,126,234,1);
         }
         
         #nowPlaying {
             color: #ffffff;
-            font-size: 18px;
+            font-size: clamp(14px, 1.5vw, 18px);
             font-weight: 700;
             text-align: center;
             text-shadow: 0 3px 15px rgba(0,0,0,0.6);
-            padding: 12px 24px;
+            padding: clamp(8px, 1vh, 12px) clamp(16px, 2vw, 24px);
             background: rgba(255,255,255,0.25);
             backdrop-filter: blur(25px);
-            border-radius: 30px;
+            border-radius: clamp(20px, 3vw, 30px);
             border: 3px solid rgba(255,255,255,0.4);
-            max-width: 280px;
+            max-width: clamp(200px, 25vw, 280px);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
-        /* Grid positions - 24 buttons around center play button */
+        /* Grid positions - 20 buttons around center play button */
         .station-btn:nth-child(1) { grid-column: 1; grid-row: 1; }
         .station-btn:nth-child(2) { grid-column: 2; grid-row: 1; }
         .station-btn:nth-child(3) { grid-column: 3; grid-row: 1; }
@@ -292,12 +189,12 @@
         .station-btn:nth-child(19) { grid-column: 5; grid-row: 4; }
         .station-btn:nth-child(20) { grid-column: 6; grid-row: 4; }
         
-        /* Logo & Volume */
+        /* Logo - responsive */
         #logo { 
             position: fixed; 
-            bottom: 30px; 
-            left: 30px; 
-            height: 80px; 
+            bottom: clamp(15px, 2vh, 30px);
+            left: clamp(15px, 2vw, 30px);
+            height: clamp(50px, 6vh, 80px);
             opacity: 0.95;
             filter: drop-shadow(0 5px 20px rgba(0,0,0,0.6));
             transition: all 0.3s ease;
@@ -306,86 +203,41 @@
         #logo:hover {
             transform: scale(1.15) rotate(5deg);
         }
-        
-        .volume-controls {
-            position: fixed; 
-            bottom: 35px; 
-            right: 35px;
-            display: flex; 
-            align-items: center; 
-            gap: 18px;
-            background: rgba(255,255,255,0.25);
+
+        /* Volume indicator popup - responsive */
+        #volumeIndicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(255,255,255,0.95);
             backdrop-filter: blur(25px);
-            padding: 20px 35px;
-            border-radius: 60px;
-            border: 3px solid rgba(255,255,255,0.4);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            z-index: 200;
-        }
-        
-        #muteBtn {
-            width: 60px; 
-            height: 60px;
-            border-radius: 50%; 
-            border: 3px solid rgba(255,255,255,0.6);
-            background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
-            cursor: pointer;
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
+            padding: clamp(25px, 4vh, 40px) clamp(35px, 5vw, 60px);
+            border-radius: clamp(25px, 4vw, 40px);
+            border: 4px solid rgba(102,126,234,0.8);
+            box-shadow: 0 20px 80px rgba(0,0,0,0.5);
+            z-index: 300;
+            pointer-events: none;
             transition: all 0.3s ease;
         }
-        #muteBtn:hover { 
-            transform: scale(1.15);
-            background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0.3));
-        }
-        #muteBtn svg { 
-            width: 30px; 
-            height: 30px; 
-            fill: #ffffff;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.4));
-        }
-        #muteBtn .muted-icon { display: none; }
-        #muteBtn.muted .volume-icon { display: none; }
-        #muteBtn.muted .muted-icon { display: block; }
         
-        #volumeSlider {
-            width: 160px; 
-            height: 12px;
-            -webkit-appearance: none; 
-            appearance: none;
-            background: rgba(255,255,255,0.4); 
-            border-radius: 6px;
-            outline: none; 
-            cursor: pointer;
+        #volumeIndicator.show {
+            transform: translate(-50%, -50%) scale(1);
         }
-        #volumeSlider::-webkit-slider-thumb {
-            -webkit-appearance: none; 
-            width: 26px; 
-            height: 26px;
-            background: linear-gradient(135deg, #ffffff, #f0f0f0);
-            border-radius: 50%; 
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            transition: all 0.2s ease;
-        }
-        #volumeSlider::-webkit-slider-thumb:hover {
-            transform: scale(1.25);
-        }
-        #volumeSlider::-moz-range-thumb {
-            width: 26px; 
-            height: 26px;
-            background: linear-gradient(135deg, #ffffff, #f0f0f0);
-            border-radius: 50%; 
-            cursor: pointer; 
-            border: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        
+        #volumeIndicator .volume-text {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 800;
+            color: #667eea;
+            text-align: center;
+            white-space: nowrap;
         }
 
+        /* Tablet landscape and smaller desktops */
         @media (max-width: 1400px) {
             .main-grid {
                 grid-template-columns: repeat(5, 1fr);
-                gap: 18px;
+                gap: clamp(12px, 1.8vw, 20px);
             }
             .play-container {
                 grid-column: 2 / 5;
@@ -393,138 +245,199 @@
             }
         }
 
+        /* Tablets and smaller */
         @media (max-width: 1000px) {
             .main-grid {
                 grid-template-columns: repeat(4, 1fr);
-                gap: 15px;
+                gap: clamp(10px, 1.5vw, 18px);
             }
             .play-container {
                 grid-column: 2 / 4;
                 grid-row: 2 / 4;
             }
-            #playBtn {
-                width: 140px;
-                height: 140px;
+        }
+
+        /* Mobile landscape */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
             }
-            #playBtn svg {
-                width: 60px;
-                height: 60px;
+            .main-grid {
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(5, 1fr);
+                gap: 10px;
             }
+            .play-container {
+                grid-column: 2 / 3;
+                grid-row: 3 / 4;
+            }
+            /* Reposition buttons for mobile */
+            .station-btn:nth-child(7) { grid-column: 1; grid-row: 3; }
+            .station-btn:nth-child(8) { grid-column: 1; grid-row: 4; }
+            .station-btn:nth-child(9) { grid-column: 3; grid-row: 3; }
+            .station-btn:nth-child(10) { grid-column: 3; grid-row: 4; }
+            .station-btn:nth-child(11) { grid-column: 2; grid-row: 4; }
+        }
+
+        /* Very small screens */
+        @media (max-width: 480px) {
+            .main-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: auto;
+                gap: 8px;
+            }
+            .play-container {
+                grid-column: 1 / 3;
+                grid-row: 3;
+                padding: 10px 0;
+            }
+            .station-btn {
+                padding: 15px 10px;
+            }
+            /* Stack all buttons in 2 columns */
+            .station-btn:nth-child(1) { grid-column: 1; grid-row: 1; }
+            .station-btn:nth-child(2) { grid-column: 2; grid-row: 1; }
+            .station-btn:nth-child(3) { grid-column: 1; grid-row: 2; }
+            .station-btn:nth-child(4) { grid-column: 2; grid-row: 2; }
+            .station-btn:nth-child(5) { grid-column: 1; grid-row: 4; }
+            .station-btn:nth-child(6) { grid-column: 2; grid-row: 4; }
+            .station-btn:nth-child(7) { grid-column: 1; grid-row: 5; }
+            .station-btn:nth-child(8) { grid-column: 2; grid-row: 5; }
+            .station-btn:nth-child(9) { grid-column: 1; grid-row: 6; }
+            .station-btn:nth-child(10) { grid-column: 2; grid-row: 6; }
+            .station-btn:nth-child(11) { grid-column: 1; grid-row: 7; }
+            .station-btn:nth-child(12) { grid-column: 2; grid-row: 7; }
+            .station-btn:nth-child(13) { grid-column: 1; grid-row: 8; }
+            .station-btn:nth-child(14) { grid-column: 2; grid-row: 8; }
+            .station-btn:nth-child(15) { grid-column: 1; grid-row: 9; }
+            .station-btn:nth-child(16) { grid-column: 2; grid-row: 9; }
+            .station-btn:nth-child(17) { grid-column: 1; grid-row: 10; }
+            .station-btn:nth-child(18) { grid-column: 2; grid-row: 10; }
+            .station-btn:nth-child(19) { grid-column: 1; grid-row: 11; }
+            .station-btn:nth-child(20) { grid-column: 2; grid-row: 11; }
         }
     </style>
 </head>
 <body>
-    <!-- Floating particles -->
-    <script>
-        for(let i = 0; i < 40; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 30 + 's';
-            particle.style.animationDuration = (Math.random() * 15 + 25) + 's';
-            document.body.appendChild(particle);
-        }
-    </script>
-
-    <!-- Start Screen -->
-    <div id="startScreen">
-        <button id="startBtn">🎹 BEGIN STUDYING 🎹</button>
-    </div>
-
     <audio id="audio" preload="auto" crossorigin="anonymous"></audio>
 
-    <!-- Header -->
-    <div class="header">
-        <h1>🎹 Relaxing Study Music 🎹</h1>
-        <p>Piano • Jazz • Classical • Ambient • Lo-Fi</p>
+    <!-- Volume Indicator Popup -->
+    <div id="volumeIndicator">
+        <div class="volume-text">🔊 <span id="volumePercent">80</span>%</div>
     </div>
 
-    <!-- Main Grid with Play Button in Center -->
-    <div class="main-grid">
-        <!-- Row 1 - 6 buttons -->
-        <button class="station-btn selected" data-src="https://ice1.somafm.com/groovesalad-128-mp3" data-name="Groove Salad">🌿 Groove Salad<br><small>Ambient Chill</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/dronezone-256-mp3" data-name="Drone Zone">🌌 Drone Zone<br><small>Atmospheric Ambient</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/deepspaceone-128-mp3" data-name="Deep Space">🚀 Deep Space One<br><small>Space Music</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/lush-128-mp3" data-name="Lush">🌺 Lush<br><small>Mellow Vocals</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/fluid-128-mp3" data-name="Fluid">💧 Fluid<br><small>Mellow Electronic</small></button>
-        <button class="station-btn" data-src="https://stream.radioparadise.com/mellow-320" data-name="RP Mellow">🎵 RP Mellow<br><small>Mellow Mix</small></button>
-        
-        <!-- Row 2 - 2 buttons + CENTER PLAY + 2 buttons -->
-        <button class="station-btn" data-src="https://stream.radioparadise.com/eclectic-320" data-name="RP Eclectic">🎨 RP Eclectic<br><small>World Eclectic</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/synphaera-256-mp3" data-name="Synphaera">🎹 Synphaera<br><small>Sonic Soundscapes</small></button>
-        
-        <!-- CENTER PLAY BUTTON -->
-        <div class="play-container">
-            <button id="playBtn" aria-label="Play/Pause">
-                <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                <svg class="pause-icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-            </button>
-            <div id="nowPlaying">🎶 Groove Salad 🎶</div>
+    <div class="container">
+        <!-- Main Grid with Play Button in Center -->
+        <div class="main-grid">
+            <!-- Row 1 - 6 buttons -->
+            <button class="station-btn selected" data-src="https://ice1.somafm.com/groovesalad-128-mp3" data-name="Groove Salad">🌿 Groove Salad<br><small>Ambient Chill</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/dronezone-256-mp3" data-name="Drone Zone">🌌 Drone Zone<br><small>Atmospheric Ambient</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/deepspaceone-128-mp3" data-name="Deep Space">🚀 Deep Space One<br><small>Space Music</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/lush-128-mp3" data-name="Lush">🌺 Lush<br><small>Mellow Vocals</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/fluid-128-mp3" data-name="Fluid">💧 Fluid<br><small>Mellow Electronic</small></button>
+            <button class="station-btn" data-src="https://stream.radioparadise.com/mellow-320" data-name="RP Mellow">🎵 RP Mellow<br><small>Mellow Mix</small></button>
+            
+            <!-- Row 2 - 2 buttons + CENTER PLAY + 2 buttons -->
+            <button class="station-btn" data-src="https://stream.radioparadise.com/eclectic-320" data-name="RP Eclectic">🎨 RP Eclectic<br><small>World Eclectic</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/synphaera-256-mp3" data-name="Synphaera">🎹 Synphaera<br><small>Sonic Soundscapes</small></button>
+            
+            <!-- CENTER PLAY BUTTON -->
+            <div class="play-container">
+                <button id="playBtn" aria-label="Play/Pause">
+                    <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg class="pause-icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+                <div id="nowPlaying">🎶 Groove Salad 🎶</div>
+            </div>
+            
+            <button class="station-btn" data-src="https://ice1.somafm.com/spacestation-128-mp3" data-name="Space Station">🛸 Space Station<br><small>Ambient Electronica</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/secretagent-128-mp3" data-name="Secret Agent">🕴️ Secret Agent<br><small>Spy Jazz & Lounge</small></button>
+            
+            <!-- Row 3 - 2 buttons + CENTER CONTINUES + 2 buttons -->
+            <button class="station-btn" data-src="https://ice1.somafm.com/sonicuniverse-256-mp3" data-name="Sonic Universe">🎼 Sonic Universe<br><small>Transcendent</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/digitalis-128-mp3" data-name="Digitalis">🌸 Digitalis<br><small>Downtempo</small></button>
+            <!-- CENTER CONTINUES -->
+            <button class="station-btn" data-src="https://ice1.somafm.com/thetrip-128-mp3" data-name="The Trip">✨ The Trip<br><small>Progressive House</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/beatblender-128-mp3" data-name="Beat Blender">🎧 Beat Blender<br><small>Eclectic Beats</small></button>
+            
+            <!-- Row 4 - 6 buttons -->
+            <button class="station-btn" data-src="https://ice1.somafm.com/indiepop-128-mp3" data-name="Indie Pop">🎸 Indie Pop Rocks<br><small>Indie Pop</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/bagel-128-mp3" data-name="BAGeL Radio">🥯 BAGeL Radio<br><small>Acoustic/Electronic</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/poptron-128-mp3" data-name="PopTron">🔮 PopTron<br><small>Electropop</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/suburbsofgoa-128-mp3" data-name="Suburbs of Goa">🕉️ Suburbs of Goa<br><small>Goa Psytrance</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/missioncontrol-128-mp3" data-name="Mission Control">🚀 Mission Control<br><small>Ambient Space</small></button>
+            <button class="station-btn" data-src="just-relax-11157.mp3" data-name="Just Relax">🎼 Just Relax<br><small>Your Track</small></button>
         </div>
-        
-        <button class="station-btn" data-src="https://ice1.somafm.com/spacestation-128-mp3" data-name="Space Station">🛸 Space Station<br><small>Ambient Electronica</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/secretagent-128-mp3" data-name="Secret Agent">🕴️ Secret Agent<br><small>Spy Jazz & Lounge</small></button>
-        
-        <!-- Row 3 - 2 buttons + CENTER CONTINUES + 2 buttons -->
-        <button class="station-btn" data-src="https://ice1.somafm.com/sonicuniverse-256-mp3" data-name="Sonic Universe">🎼 Sonic Universe<br><small>Transcendent</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/digitalis-128-mp3" data-name="Digitalis">🌸 Digitalis<br><small>Downtempo</small></button>
-        <!-- CENTER CONTINUES -->
-        <button class="station-btn" data-src="https://ice1.somafm.com/thetrip-128-mp3" data-name="The Trip">✨ The Trip<br><small>Progressive House</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/beatblender-128-mp3" data-name="Beat Blender">🎧 Beat Blender<br><small>Eclectic Beats</small></button>
-        
-        <!-- Row 4 - 6 buttons -->
-        <button class="station-btn" data-src="https://ice1.somafm.com/indiepop-128-mp3" data-name="Indie Pop">🎸 Indie Pop Rocks<br><small>Indie Pop</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/bagel-128-mp3" data-name="BAGeL Radio">🥯 BAGeL Radio<br><small>Acoustic/Electronic</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/poptron-128-mp3" data-name="PopTron">🔮 PopTron<br><small>Electropop</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/suburbsofgoa-128-mp3" data-name="Suburbs of Goa">🕉️ Suburbs of Goa<br><small>Goa Psytrance</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/missioncontrol-128-mp3" data-name="Mission Control">🚀 Mission Control<br><small>Ambient Space</small></button>
-        <button class="station-btn" data-src="just-relax-11157.mp3" data-name="Just Relax">🎼 Just Relax<br><small>Your Track</small></button>
     </div>
 
     <img id="logo" src="logo.png" alt="Logo">
-
-    <div class="volume-controls">
-        <button id="muteBtn" aria-label="Mute/Unmute">
-            <svg class="volume-icon" viewBox="0 0 24 24">
-                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-            </svg>
-            <svg class="muted-icon" viewBox="0 0 24 24">
-                <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
-            </svg>
-        </button>
-        <input type="range" id="volumeSlider" min="0" max="100" value="80" aria-label="Volume">
-    </div>
 
     <script>
         const audio = document.getElementById('audio');
         const playBtn = document.getElementById('playBtn');
         const stationBtns = document.querySelectorAll('.station-btn');
-        const muteBtn = document.getElementById('muteBtn');
-        const volumeSlider = document.getElementById('volumeSlider');
-        const startScreen = document.getElementById('startScreen');
-        const startBtn = document.getElementById('startBtn');
         const nowPlaying = document.getElementById('nowPlaying');
+        const volumeIndicator = document.getElementById('volumeIndicator');
+        const volumePercent = document.getElementById('volumePercent');
 
         let currentStation = stationBtns[0].dataset.src;
         let currentName = stationBtns[0].dataset.name;
         let isPlaying = false;
-        let audioInitialized = false;
+        let currentVolume = 80;
         audio.volume = 0.8;
+
+        let volumeIndicatorTimeout;
 
         function updateNowPlaying(name) {
             nowPlaying.textContent = `🎶 ${name} 🎶`;
         }
 
-        startBtn.addEventListener('click', async function() {
-            audio.src = currentStation;
-            audio.muted = false;
-            audio.volume = 0.8;
-            audioInitialized = true;
-            audio.load();
-            await new Promise(resolve => setTimeout(resolve, 100));
-            startScreen.classList.add('hidden');
+        function showVolumeIndicator(volume) {
+            const volumeValue = Math.round(volume);
+            volumePercent.textContent = volumeValue;
+            volumeIndicator.classList.add('show');
+            
+            clearTimeout(volumeIndicatorTimeout);
+            volumeIndicatorTimeout = setTimeout(() => {
+                volumeIndicator.classList.remove('show');
+            }, 1000);
+        }
+
+        function setVolume(newVolume) {
+            newVolume = Math.max(0, Math.min(100, newVolume));
+            currentVolume = newVolume;
+            audio.volume = newVolume / 100;
+            showVolumeIndicator(newVolume);
+        }
+
+        // Keyboard controls
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowUp' || e.key === 'VolumeUp') {
+                e.preventDefault();
+                setVolume(currentVolume + 5);
+            }
+            else if (e.key === 'ArrowDown' || e.key === 'VolumeDown') {
+                e.preventDefault();
+                setVolume(currentVolume - 5);
+            }
+            else if (e.key === 'VolumeMute' || e.key === 'm' || e.key === 'M') {
+                e.preventDefault();
+                // Toggle mute
+                if (audio.volume > 0) {
+                    audio.volume = 0;
+                    showVolumeIndicator(0);
+                } else {
+                    audio.volume = currentVolume / 100;
+                    showVolumeIndicator(currentVolume);
+                }
+            }
+            else if (e.key === ' ' || e.key === 'Spacebar') {
+                e.preventDefault();
+                playBtn.click();
+            }
         });
 
+        // Wake Lock
         let wakeLock = null;
         async function requestWakeLock() {
             if ('wakeLock' in navigator) {
@@ -560,7 +473,6 @@
 
         stationBtns.forEach(btn => {
             btn.addEventListener('click', function() {
-                if (!audioInitialized) return;
                 stationBtns.forEach(b => b.classList.remove('selected'));
                 this.classList.add('selected');
                 currentStation = this.dataset.src;
@@ -579,11 +491,8 @@
         });
 
         playBtn.addEventListener('click', async function() {
-            if (!audioInitialized) return;
-
             if (!isPlaying) {
-                audio.muted = false;
-                audio.volume = volumeSlider.value / 100;
+                audio.volume = currentVolume / 100;
                 try {
                     if (audio.src !== currentStation) {
                         audio.src = currentStation;
@@ -598,33 +507,6 @@
             } else {
                 audio.pause();
                 await releaseWakeLock();
-            }
-        });
-
-        let previousVolume = audio.volume;
-        volumeSlider.addEventListener('input', function() {
-            if (!audioInitialized) return;
-            audio.volume = this.value / 100;
-            audio.muted = false;
-            if (audio.volume > 0) {
-                muteBtn.classList.remove('muted');
-                previousVolume = audio.volume;
-            } else {
-                muteBtn.classList.add('muted');
-            }
-        });
-        
-        muteBtn.addEventListener('click', function() {
-            if (!audioInitialized) return;
-            if (audio.muted || audio.volume === 0) {
-                audio.muted = false;
-                audio.volume = previousVolume || 0.8;
-                volumeSlider.value = audio.volume * 100;
-                muteBtn.classList.remove('muted');
-            } else {
-                previousVolume = audio.volume;
-                audio.muted = true;
-                muteBtn.classList.add('muted');
             }
         });
     </script>
