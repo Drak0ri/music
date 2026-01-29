@@ -55,29 +55,30 @@
         
         .header {
             position: absolute;
-            top: 30px;
+            top: 15px;
             text-align: center;
             color: #ffffff;
             z-index: 10;
         }
         .header h1 {
-            font-size: 36px;
-            margin-bottom: 5px;
+            font-size: 28px;
+            margin-bottom: 3px;
             text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
         .header p {
-            font-size: 16px;
+            font-size: 14px;
             opacity: 0.9;
         }
         
         /* Circular layout container */
         .circle-container {
             position: relative;
-            width: 800px;
-            height: 800px;
+            width: 700px;
+            height: 700px;
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-top: 20px;
         }
         
         /* Center play button */
@@ -86,15 +87,15 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             z-index: 5;
         }
         
         #nowPlaying {
             color: #ffffff;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
-            max-width: 200px;
+            max-width: 180px;
             text-align: center;
             opacity: 0.95;
             text-shadow: 0 2px 8px rgba(0,0,0,0.4);
@@ -102,8 +103,8 @@
         }
         
         #playBtn {
-            width: 180px; 
-            height: 180px;
+            width: 160px; 
+            height: 160px;
             border-radius: 50%; 
             border: none;
             background-color: #ffffff;
@@ -122,8 +123,8 @@
             transform: scale(0.98); 
         }
         #playBtn svg { 
-            width: 70px; 
-            height: 70px; 
+            width: 65px; 
+            height: 65px; 
             fill: #1a237e; 
         }
         #playBtn .pause-icon { display: none; }
@@ -133,26 +134,28 @@
         /* Station buttons arranged in circle */
         .station-btn {
             position: absolute;
-            min-width: 130px;
-            max-width: 150px;
-            padding: 12px 18px;
-            border-radius: 20px;
+            min-width: 110px;
+            max-width: 130px;
+            padding: 10px 14px;
+            border-radius: 18px;
             border: 2px solid rgba(255,255,255,0.4);
             background-color: rgba(255,255,255,0.15);
             backdrop-filter: blur(10px);
             color: #ffffff;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            line-height: 1.2;
         }
         .station-btn:hover { 
             background-color: rgba(255,255,255,0.25); 
             border-color: rgba(255,255,255,0.7);
             transform: scale(1.08);
             box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            z-index: 10;
         }
         .station-btn.selected { 
             background-color: #ffffff; 
@@ -160,80 +163,70 @@
             border-color: #ffffff; 
             box-shadow: 0 6px 25px rgba(255,255,255,0.5);
             transform: scale(1.1);
+            z-index: 10;
         }
         
-        /* Position buttons in a circle - 24 buttons */
-        .station-btn:nth-child(1) { top: 0%; left: 50%; transform: translate(-50%, -50%); }
-        .station-btn:nth-child(2) { top: 6%; left: 70%; transform: translate(-50%, -50%); }
-        .station-btn:nth-child(3) { top: 18%; left: 85%; transform: translate(-50%, -50%); }
-        .station-btn:nth-child(4) { top: 33%; left: 93%; transform: translate(-50%, -50%); }
-        .station-btn:nth-child(5) { top: 50%; left: 97%; transform: translate(-50%, -50%); }
-        .station-btn:nth-child(6) { top: 67%; left: 93%; transform: translate(-50%, -50%); }
-        .station-btn:nth-child(7) { top: 82%; left: 85%; transform: translate(-50%, -50%); }
-        .station-btn:nth-child(8) { top: 94%; left: 70%; transform: translate(-50%, -50%); }
-        .station-btn:nth-child(9) { top: 100%; left: 50%; transform: translate(-50%, -50%); }
-        .station-btn:nth-child(10) { top: 94%; left: 30%; transform: translate(-50%, -50%); }
-        .station-btn:nth-child(11) { top: 82%; left: 15%; transform: translate(-50%, -50%); }
-        .station-btn:nth-child(12) { top: 67%; left: 7%; transform: translate(-50%, -50%); }
-        .station-btn:nth-child(13) { top: 50%; left: 3%; transform: translate(-50%, -50%); }
-        .station-btn:nth-child(14) { top: 33%; left: 7%; transform: translate(-50%, -50%); }
-        .station-btn:nth-child(15) { top: 18%; left: 15%; transform: translate(-50%, -50%); }
-        .station-btn:nth-child(16) { top: 6%; left: 30%; transform: translate(-50%, -50%); }
+        /* Position 36 buttons in a perfect circle */
+        .station-btn:nth-child(1) { top: 3%; left: 50%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(2) { top: 5%; left: 62%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(3) { top: 9%; left: 73%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(4) { top: 15%; left: 83%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(5) { top: 22%; left: 91%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(6) { top: 31%; left: 96%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(7) { top: 40%; left: 99%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(8) { top: 50%; left: 99.5%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(9) { top: 60%; left: 99%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(10) { top: 69%; left: 96%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(11) { top: 78%; left: 91%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(12) { top: 85%; left: 83%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(13) { top: 91%; left: 73%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(14) { top: 95%; left: 62%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(15) { top: 97%; left: 50%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(16) { top: 95%; left: 38%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(17) { top: 91%; left: 27%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(18) { top: 85%; left: 17%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(19) { top: 78%; left: 9%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(20) { top: 69%; left: 4%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(21) { top: 60%; left: 1%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(22) { top: 50%; left: 0.5%; transform: translate(-50%, -50%); }
+        .station-btn:nth-child(23) { top: 40%; left: 1%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(24) { top: 31%; left: 4%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(25) { top: 22%; left: 9%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(26) { top: 15%; left: 17%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(27) { top: 9%; left: 27%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(28) { top: 5%; left: 38%; transform: translate(-50%, 0); }
         
-        /* Adjust selected state to maintain position */
-        .station-btn.selected:nth-child(1) { transform: translate(-50%, -50%) scale(1.1); }
-        .station-btn.selected:nth-child(2) { transform: translate(-50%, -50%) scale(1.1); }
-        .station-btn.selected:nth-child(3) { transform: translate(-50%, -50%) scale(1.1); }
-        .station-btn.selected:nth-child(4) { transform: translate(-50%, -50%) scale(1.1); }
-        .station-btn.selected:nth-child(5) { transform: translate(-50%, -50%) scale(1.1); }
-        .station-btn.selected:nth-child(6) { transform: translate(-50%, -50%) scale(1.1); }
-        .station-btn.selected:nth-child(7) { transform: translate(-50%, -50%) scale(1.1); }
-        .station-btn.selected:nth-child(8) { transform: translate(-50%, -50%) scale(1.1); }
-        .station-btn.selected:nth-child(9) { transform: translate(-50%, -50%) scale(1.1); }
-        .station-btn.selected:nth-child(10) { transform: translate(-50%, -50%) scale(1.1); }
-        .station-btn.selected:nth-child(11) { transform: translate(-50%, -50%) scale(1.1); }
-        .station-btn.selected:nth-child(12) { transform: translate(-50%, -50%) scale(1.1); }
-        .station-btn.selected:nth-child(13) { transform: translate(-50%, -50%) scale(1.1); }
-        .station-btn.selected:nth-child(14) { transform: translate(-50%, -50%) scale(1.1); }
-        .station-btn.selected:nth-child(15) { transform: translate(-50%, -50%) scale(1.1); }
-        .station-btn.selected:nth-child(16) { transform: translate(-50%, -50%) scale(1.1); }
-        
-        .station-btn:hover:nth-child(1) { transform: translate(-50%, -50%) scale(1.08); }
-        .station-btn:hover:nth-child(2) { transform: translate(-50%, -50%) scale(1.08); }
-        .station-btn:hover:nth-child(3) { transform: translate(-50%, -50%) scale(1.08); }
-        .station-btn:hover:nth-child(4) { transform: translate(-50%, -50%) scale(1.08); }
-        .station-btn:hover:nth-child(5) { transform: translate(-50%, -50%) scale(1.08); }
-        .station-btn:hover:nth-child(6) { transform: translate(-50%, -50%) scale(1.08); }
-        .station-btn:hover:nth-child(7) { transform: translate(-50%, -50%) scale(1.08); }
-        .station-btn:hover:nth-child(8) { transform: translate(-50%, -50%) scale(1.08); }
-        .station-btn:hover:nth-child(9) { transform: translate(-50%, -50%) scale(1.08); }
-        .station-btn:hover:nth-child(10) { transform: translate(-50%, -50%) scale(1.08); }
-        .station-btn:hover:nth-child(11) { transform: translate(-50%, -50%) scale(1.08); }
-        .station-btn:hover:nth-child(12) { transform: translate(-50%, -50%) scale(1.08); }
-        .station-btn:hover:nth-child(13) { transform: translate(-50%, -50%) scale(1.08); }
-        .station-btn:hover:nth-child(14) { transform: translate(-50%, -50%) scale(1.08); }
-        .station-btn:hover:nth-child(15) { transform: translate(-50%, -50%) scale(1.08); }
-        .station-btn:hover:nth-child(16) { transform: translate(-50%, -50%) scale(1.08); }
+        /* Additional inner ring for more buttons */
+        .station-btn:nth-child(29) { top: 18%; left: 50%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(30) { top: 25%; left: 70%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(31) { top: 40%; left: 82%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(32) { top: 60%; left: 82%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(33) { top: 75%; left: 70%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(34) { top: 82%; left: 50%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(35) { top: 75%; left: 30%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(36) { top: 60%; left: 18%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(37) { top: 40%; left: 18%; transform: translate(-50%, 0); }
+        .station-btn:nth-child(38) { top: 25%; left: 30%; transform: translate(-50%, 0); }
         
         #logo { 
             position: fixed; 
-            bottom: 20px; 
-            left: 20px; 
-            height: 60px; 
+            bottom: 15px; 
+            left: 15px; 
+            height: 50px; 
             opacity: 0.9; 
         }
         
         .volume-controls {
             position: fixed; 
-            bottom: 20px; 
-            right: 20px;
+            bottom: 15px; 
+            right: 15px;
             display: flex; 
             align-items: center; 
             gap: 12px;
         }
         #muteBtn {
-            width: 50px; 
-            height: 50px;
+            width: 45px; 
+            height: 45px;
             border-radius: 50%; 
             border: 2px solid rgba(255,255,255,0.5);
             background-color: rgba(255,255,255,0.15);
@@ -248,16 +241,16 @@
             background-color: rgba(255,255,255,0.25); 
         }
         #muteBtn svg { 
-            width: 24px; 
-            height: 24px; 
+            width: 22px; 
+            height: 22px; 
             fill: #ffffff; 
         }
         #muteBtn .muted-icon { display: none; }
         #muteBtn.muted .volume-icon { display: none; }
         #muteBtn.muted .muted-icon { display: block; }
         #volumeSlider {
-            width: 120px; 
-            height: 8px;
+            width: 100px; 
+            height: 6px;
             -webkit-appearance: none; 
             appearance: none;
             background: rgba(255,255,255,0.3); 
@@ -268,15 +261,15 @@
         #volumeSlider::-webkit-slider-thumb {
             -webkit-appearance: none; 
             appearance: none;
-            width: 20px; 
-            height: 20px;
+            width: 18px; 
+            height: 18px;
             background: #ffffff; 
             border-radius: 50%; 
             cursor: pointer;
         }
         #volumeSlider::-moz-range-thumb {
-            width: 20px; 
-            height: 20px;
+            width: 18px; 
+            height: 18px;
             background: #ffffff; 
             border-radius: 50%; 
             cursor: pointer; 
@@ -285,22 +278,22 @@
 
         @media (max-width: 900px) {
             .circle-container {
-                width: 600px;
-                height: 600px;
+                width: 500px;
+                height: 500px;
             }
             .station-btn {
-                min-width: 100px;
-                max-width: 120px;
-                font-size: 12px;
-                padding: 10px 14px;
+                min-width: 85px;
+                max-width: 100px;
+                font-size: 10px;
+                padding: 8px 10px;
             }
             #playBtn {
-                width: 140px;
-                height: 140px;
+                width: 120px;
+                height: 120px;
             }
             #playBtn svg {
-                width: 55px;
-                height: 55px;
+                width: 50px;
+                height: 50px;
             }
         }
     </style>
@@ -315,11 +308,11 @@
 
     <div class="header">
         <h1>🎵 Study Music Kiosk</h1>
-        <p>Select your perfect focus soundtrack</p>
+        <p>Select your perfect focus soundtrack - 36 stations!</p>
     </div>
 
     <div class="circle-container">
-        <!-- Station buttons arranged in a circle (16 stations) -->
+        <!-- Outer ring stations (28 buttons) -->
         <button class="station-btn selected" data-src="https://ice1.somafm.com/groovesalad-128-mp3" data-name="Groove Salad">🌿 Groove Salad</button>
         <button class="station-btn" data-src="https://ice1.somafm.com/dronezone-256-mp3" data-name="Drone Zone">🌌 Drone Zone</button>
         <button class="station-btn" data-src="https://ice1.somafm.com/deepspaceone-128-mp3" data-name="Deep Space">🚀 Deep Space</button>
@@ -335,6 +328,30 @@
         <button class="station-btn" data-src="https://ice1.somafm.com/indiepop-128-mp3" data-name="Indie Pop">🎸 Indie Pop</button>
         <button class="station-btn" data-src="https://ice1.somafm.com/bagel-128-mp3" data-name="BAGeL Radio">🥯 BAGeL</button>
         <button class="station-btn" data-src="https://ice1.somafm.com/illstreet-128-mp3" data-name="Illinois Street">🎤 Illinois St</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/poptron-128-mp3" data-name="PopTron">🔮 PopTron</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/suburbsofgoa-128-mp3" data-name="Suburbs of Goa">🕉️ Goa</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/sonicuniverse-256-mp3" data-name="Sonic Universe">🎼 Sonic Universe</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/digitalis-128-mp3" data-name="Digitalis">🌸 Digitalis</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/tags-128-mp3" data-name="Tag's Trip">🎺 Tag's Trip</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/secretagent-128-mp3" data-name="Secret Agent">🕴️ Secret Agent</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/seventies-320-mp3" data-name="Left Coast 70s">🎶 70s Hits</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/folkfwd-128-mp3" data-name="Folk Forward">🪕 Folk Forward</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/thistle-128-mp3" data-name="Thistle Radio">🍀 Thistle</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/bootliquor-320-mp3" data-name="Boot Liquor">🤠 Boot Liquor</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/metal-128-mp3" data-name="Metal Detector">🤘 Metal</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/covers-128-mp3" data-name="Covers">🎤 Covers</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/christmas-128-mp3" data-name="Xmas">🎄 Xmas</button>
+        
+        <!-- Inner ring stations (10 buttons) -->
+        <button class="station-btn" data-src="https://stream.radioparadise.com/rock-320" data-name="Radio Paradise Rock">🎸 RP Rock</button>
+        <button class="station-btn" data-src="https://stream.radioparadise.com/world-320" data-name="Radio Paradise World">🌍 RP World</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/dubstep-256-mp3" data-name="Dub Step">🔊 Dub Step</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/cliqhop-128-mp3" data-name="cliqhop">💿 cliqhop</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/doomed-128-mp3" data-name="Doomed">⚫ Doomed</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/earwaves-128-mp3" data-name="Earwaves">🌊 Earwaves</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/specials-128-mp3" data-name="Specials">🎭 Specials</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/u80s-256-mp3" data-name="Underground 80s">📼 80s Underground</button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/missioncontrol-128-mp3" data-name="Mission Control">🚀 Mission Control</button>
         <button class="station-btn" data-src="just-relax-11157.mp3" data-name="Just Relax">🎼 Just Relax</button>
 
         <!-- Center play button -->
