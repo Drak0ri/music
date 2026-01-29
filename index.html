@@ -11,15 +11,15 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background: linear-gradient(135deg, #a8c0ff 0%, #c2e9fb 25%, #667eea 50%, #764ba2 75%, #f093fb 100%);
             background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            animation: gradientShift 20s ease infinite;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             font-family: 'Poppins', sans-serif;
-            overflow-x: hidden;
             padding: 20px;
         }
         
@@ -34,17 +34,17 @@
             position: fixed;
             width: 3px;
             height: 3px;
-            background: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.7);
             border-radius: 50%;
             pointer-events: none;
-            animation: float 25s infinite;
+            animation: float 30s infinite;
         }
         
         @keyframes float {
             0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
             10% { opacity: 1; }
             90% { opacity: 1; }
-            100% { transform: translateY(-100vh) translateX(30px); opacity: 0; }
+            100% { transform: translateY(-100vh) translateX(40px); opacity: 0; }
         }
         
         /* Start Screen */
@@ -53,7 +53,7 @@
             inset: 0;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             background-size: 200% 200%;
-            animation: gradientShift 10s ease infinite;
+            animation: gradientShift 12s ease infinite;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -91,19 +91,15 @@
         
         /* Header */
         .header {
-            position: fixed;
-            top: 25px;
-            left: 50%;
-            transform: translateX(-50%);
             text-align: center;
             color: #ffffff;
-            z-index: 100;
+            margin-bottom: 40px;
             text-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
         .header h1 {
-            font-size: 52px;
+            font-size: 56px;
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             background: linear-gradient(90deg, #fff, #f0f0f0, #fff);
             background-size: 200%;
             -webkit-background-clip: text;
@@ -117,99 +113,32 @@
         }
         
         .header p {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 600;
             opacity: 0.95;
         }
         
-        /* Main Grid Layout */
-        .main-container {
+        /* Main container */
+        .container {
             width: 100%;
-            max-width: 1800px;
-            min-height: 100vh;
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            grid-template-rows: repeat(5, 1fr);
-            gap: 25px;
-            padding: 140px 40px 140px 40px;
-            align-items: center;
-        }
-        
-        /* Station buttons - SPACIOUS */
-        .station-btn {
-            min-height: 90px;
-            padding: 20px 25px;
-            border-radius: 30px;
-            border: 3px solid rgba(255,255,255,0.5);
-            background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15));
-            backdrop-filter: blur(20px);
-            color: #ffffff;
-            font-size: 17px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            text-align: center;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3), 
-                        inset 0 1px 0 rgba(255,255,255,0.4);
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1.4;
-        }
-        
-        .station-btn:hover { 
-            background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.3));
-            border-color: rgba(255,255,255,0.9);
-            transform: scale(1.12) translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4), 
-                        0 0 50px rgba(255,255,255,0.7);
-        }
-        
-        .station-btn.selected { 
-            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
-            color: #667eea; 
-            border-color: #ffffff; 
-            box-shadow: 0 12px 45px rgba(255,255,255,0.7), 
-                        0 0 70px rgba(102,126,234,0.9);
-            transform: scale(1.15) translateY(-8px);
-            animation: selectedGlow 2s ease infinite;
-        }
-        
-        @keyframes selectedGlow {
-            0%, 100% { box-shadow: 0 12px 45px rgba(255,255,255,0.7), 0 0 70px rgba(102,126,234,0.9); }
-            50% { box-shadow: 0 12px 45px rgba(255,255,255,0.9), 0 0 100px rgba(102,126,234,1); }
-        }
-        
-        /* Center HUGE play button - spans 2x2 grid cells */
-        .play-container {
-            grid-column: 3 / 5;
-            grid-row: 2 / 4;
+            max-width: 1600px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            gap: 25px;
-            z-index: 50;
+            gap: 50px;
         }
         
-        #nowPlaying {
-            color: #ffffff;
-            font-size: 26px;
-            font-weight: 700;
-            text-align: center;
-            text-shadow: 0 3px 15px rgba(0,0,0,0.6);
-            padding: 15px 30px;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(25px);
-            border-radius: 35px;
-            border: 3px solid rgba(255,255,255,0.4);
-            max-width: 350px;
+        /* Play button section - TOP CENTER */
+        .play-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
         }
         
         #playBtn {
-            width: 260px; 
-            height: 260px;
+            width: 280px; 
+            height: 280px;
             border-radius: 50%; 
             border: 6px solid rgba(255,255,255,0.6);
             background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
@@ -219,20 +148,36 @@
             align-items: center;
             transition: all 0.4s ease;
             box-shadow: 0 20px 70px rgba(0,0,0,0.5), 
-                        0 0 90px rgba(255,255,255,0.5);
+                        0 0 100px rgba(255,255,255,0.6);
+            position: relative;
+        }
+        
+        #playBtn::before {
+            content: '';
+            position: absolute;
+            inset: -50%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.4), transparent);
+            transform: rotate(45deg);
+            animation: shine 4s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
         
         #playBtn:hover { 
             transform: scale(1.12); 
             box-shadow: 0 25px 90px rgba(0,0,0,0.6), 
-                        0 0 130px rgba(255,255,255,0.7);
+                        0 0 150px rgba(255,255,255,0.8);
         }
         
         #playBtn svg { 
-            width: 100px; 
-            height: 100px; 
+            width: 110px; 
+            height: 110px; 
             fill: #667eea;
             filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+            z-index: 1;
         }
         
         #playBtn .pause-icon { display: none; }
@@ -243,43 +188,91 @@
         }
         
         @keyframes playingPulse {
-            0%, 100% { box-shadow: 0 20px 70px rgba(0,0,0,0.5), 0 0 90px rgba(255,255,255,0.5); }
-            50% { box-shadow: 0 20px 70px rgba(0,0,0,0.5), 0 0 140px rgba(102,126,234,1); }
+            0%, 100% { box-shadow: 0 20px 70px rgba(0,0,0,0.5), 0 0 100px rgba(255,255,255,0.6); }
+            50% { box-shadow: 0 20px 70px rgba(0,0,0,0.5), 0 0 160px rgba(102,126,234,1); }
         }
         
-        /* Grid positions for 24 buttons around the center */
-        .station-btn:nth-child(1) { grid-column: 1; grid-row: 1; }
-        .station-btn:nth-child(2) { grid-column: 2; grid-row: 1; }
-        .station-btn:nth-child(3) { grid-column: 3; grid-row: 1; }
-        .station-btn:nth-child(4) { grid-column: 4; grid-row: 1; }
-        .station-btn:nth-child(5) { grid-column: 5; grid-row: 1; }
-        .station-btn:nth-child(6) { grid-column: 6; grid-row: 1; }
+        #nowPlaying {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 0 3px 15px rgba(0,0,0,0.6);
+            padding: 18px 35px;
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(25px);
+            border-radius: 40px;
+            border: 3px solid rgba(255,255,255,0.4);
+            min-width: 350px;
+            animation: textGlow 3s ease infinite;
+        }
         
-        .station-btn:nth-child(7) { grid-column: 1; grid-row: 2; }
-        .station-btn:nth-child(8) { grid-column: 2; grid-row: 2; }
-        /* Center play button occupies 3-4, 2-3 */
-        .station-btn:nth-child(9) { grid-column: 5; grid-row: 2; }
-        .station-btn:nth-child(10) { grid-column: 6; grid-row: 2; }
+        @keyframes textGlow {
+            0%, 100% { box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
+            50% { box-shadow: 0 5px 30px rgba(255,255,255,0.5); }
+        }
         
-        .station-btn:nth-child(11) { grid-column: 1; grid-row: 3; }
-        .station-btn:nth-child(12) { grid-column: 2; grid-row: 3; }
-        /* Center continues */
-        .station-btn:nth-child(13) { grid-column: 5; grid-row: 3; }
-        .station-btn:nth-child(14) { grid-column: 6; grid-row: 3; }
+        /* Stations grid */
+        .stations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1600px;
+        }
         
-        .station-btn:nth-child(15) { grid-column: 1; grid-row: 4; }
-        .station-btn:nth-child(16) { grid-column: 2; grid-row: 4; }
-        .station-btn:nth-child(17) { grid-column: 3; grid-row: 4; }
-        .station-btn:nth-child(18) { grid-column: 4; grid-row: 4; }
-        .station-btn:nth-child(19) { grid-column: 5; grid-row: 4; }
-        .station-btn:nth-child(20) { grid-column: 6; grid-row: 4; }
+        .station-btn {
+            min-height: 100px;
+            padding: 22px 28px;
+            border-radius: 32px;
+            border: 3px solid rgba(255,255,255,0.5);
+            background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15));
+            backdrop-filter: blur(20px);
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3), 
+                        inset 0 1px 0 rgba(255,255,255,0.4);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            line-height: 1.4;
+        }
         
-        .station-btn:nth-child(21) { grid-column: 1; grid-row: 5; }
-        .station-btn:nth-child(22) { grid-column: 2; grid-row: 5; }
-        .station-btn:nth-child(23) { grid-column: 3; grid-row: 5; }
-        .station-btn:nth-child(24) { grid-column: 4; grid-row: 5; }
-        .station-btn:nth-child(25) { grid-column: 5; grid-row: 5; }
-        .station-btn:nth-child(26) { grid-column: 6; grid-row: 5; }
+        .station-btn small {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+        
+        .station-btn:hover { 
+            background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.3));
+            border-color: rgba(255,255,255,0.9);
+            transform: scale(1.08) translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4), 
+                        0 0 50px rgba(255,255,255,0.7);
+        }
+        
+        .station-btn.selected { 
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+            color: #667eea; 
+            border-color: #ffffff; 
+            box-shadow: 0 12px 45px rgba(255,255,255,0.7), 
+                        0 0 80px rgba(102,126,234,0.9);
+            transform: scale(1.12) translateY(-8px);
+            animation: selectedGlow 2s ease infinite;
+        }
+        
+        @keyframes selectedGlow {
+            0%, 100% { box-shadow: 0 12px 45px rgba(255,255,255,0.7), 0 0 80px rgba(102,126,234,0.9); }
+            50% { box-shadow: 0 12px 45px rgba(255,255,255,0.9), 0 0 120px rgba(102,126,234,1); }
+        }
         
         /* Logo & Volume */
         #logo { 
@@ -303,9 +296,9 @@
             display: flex; 
             align-items: center; 
             gap: 18px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.25);
             backdrop-filter: blur(25px);
-            padding: 18px 30px;
+            padding: 20px 35px;
             border-radius: 60px;
             border: 3px solid rgba(255,255,255,0.4);
             box-shadow: 0 10px 40px rgba(0,0,0,0.4);
@@ -371,29 +364,21 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
 
-        @media (max-width: 1400px) {
-            .main-container {
-                grid-template-columns: repeat(5, 1fr);
-                padding: 130px 30px 130px 30px;
-            }
-            .play-container {
-                grid-column: 2 / 5;
-                grid-row: 2 / 4;
+        @media (max-width: 1200px) {
+            .stations-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 20px;
             }
         }
 
-        @media (max-width: 1000px) {
-            .main-container {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 20px;
-            }
-            .play-container {
-                grid-column: 2 / 4;
-                grid-row: 3 / 5;
-            }
-            #playBtn {
-                width: 200px;
-                height: 200px;
+        @media (max-width: 768px) {
+            .header h1 { font-size: 36px; }
+            .header p { font-size: 18px; }
+            #playBtn { width: 220px; height: 220px; }
+            #playBtn svg { width: 80px; height: 80px; }
+            .stations-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
             }
         }
     </style>
@@ -405,8 +390,8 @@
             const particle = document.createElement('div');
             particle.className = 'particle';
             particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 25 + 's';
-            particle.style.animationDuration = (Math.random() * 15 + 20) + 's';
+            particle.style.animationDelay = Math.random() * 30 + 's';
+            particle.style.animationDuration = (Math.random() * 15 + 25) + 's';
             document.body.appendChild(particle);
         }
     </script>
@@ -418,53 +403,53 @@
 
     <audio id="audio" preload="auto" crossorigin="anonymous"></audio>
 
-    <div class="header">
-        <h1>🎹 Relaxing Study Music 🎹</h1>
-        <p>Piano • Jazz • Classical • Ambient • Lo-Fi</p>
-    </div>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎹 Relaxing Study Music 🎹</h1>
+            <p>Piano • Jazz • Classical • Ambient • Lo-Fi</p>
+        </div>
 
-    <div class="main-container">
-        <!-- 24 STUDY-FOCUSED STATIONS -->
-        <button class="station-btn selected" data-src="https://ice1.somafm.com/groovesalad-128-mp3" data-name="Groove Salad">🌿 Groove Salad<br><small>Ambient Chill</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/dronezone-256-mp3" data-name="Drone Zone">🌌 Drone Zone<br><small>Atmospheric</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/deepspaceone-128-mp3" data-name="Deep Space">🚀 Deep Space<br><small>Space Music</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/spacestation-128-mp3" data-name="Space Station">🛸 Space Station<br><small>Ambient Electro</small></button>
-        <button class="station-btn" data-src="https://stream.radioparadise.com/mellow-320" data-name="RP Mellow">🎵 RP Mellow<br><small>Mellow Mix</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/sf1033-128-mp3" data-name="SF 10-33">📻 SF 10-33<br><small>Ambient Focus</small></button>
-        
-        <button class="station-btn" data-src="https://ice1.somafm.com/synphaera-256-mp3" data-name="Synphaera">🎹 Synphaera<br><small>Soundscapes</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/lush-128-mp3" data-name="Lush">🌺 Lush<br><small>Mellow Vocals</small></button>
-        <!-- CENTER PLAY BUTTON HERE (grid 3-4, 2-3) -->
-        <button class="station-btn" data-src="https://ice1.somafm.com/fluid-128-mp3" data-name="Fluid">💧 Fluid<br><small>Mellow Electronic</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/thetrip-128-mp3" data-name="The Trip">✨ The Trip<br><small>Progressive</small></button>
-        
-        <button class="station-btn" data-src="https://ice1.somafm.com/tags-128-mp3" data-name="Tag's Trip">🎺 Tag's Trip<br><small>Trance Mix</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/sonicuniverse-256-mp3" data-name="Sonic Universe">🎼 Sonic Universe<br><small>Transcendent</small></button>
-        <!-- CENTER CONTINUES -->
-        <button class="station-btn" data-src="https://ice1.somafm.com/digitalis-128-mp3" data-name="Digitalis">🌸 Digitalis<br><small>Downtempo</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/secretagent-128-mp3" data-name="Secret Agent">🕴️ Secret Agent<br><small>Spy Jazz</small></button>
-        
-        <button class="station-btn" data-src="https://ice1.somafm.com/suburbsofgoa-128-mp3" data-name="Suburbs of Goa">🕉️ Suburbs of Goa<br><small>Goa Trance</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/folkfwd-128-mp3" data-name="Folk Forward">🪕 Folk Forward<br><small>Indie Folk</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/thistle-128-mp3" data-name="Thistle Radio">🍀 Thistle<br><small>Celtic</small></button>
-        <button class="station-btn" data-src="https://stream.radioparadise.com/world-320" data-name="RP World">🌍 RP World<br><small>World Music</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/cliqhop-128-mp3" data-name="cliqhop">💿 cliqhop<br><small>IDM Beats</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/missioncontrol-128-mp3" data-name="Mission Control">🚀 Mission Control<br><small>Ambient Space</small></button>
-        
-        <button class="station-btn" data-src="https://ice1.somafm.com/7soul-128-aac" data-name="Seven Soul">🎷 Seven Soul<br><small>Smooth Jazz</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/n5md-128-mp3" data-name="n5MD Radio">🎛️ n5MD<br><small>Electronica</small></button>
-        <button class="station-btn" data-src="https://stream.radioparadise.com/eclectic-320" data-name="RP Eclectic">🎨 RP Eclectic<br><small>Eclectic Mix</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/defcon-256-mp3" data-name="DEF CON Radio">⚡ DEF CON<br><small>Electronic</small></button>
-        <button class="station-btn" data-src="https://ice1.somafm.com/beatblender-128-mp3" data-name="Beat Blender">🎧 Beat Blender<br><small>Eclectic Beats</small></button>
-        <button class="station-btn" data-src="just-relax-11157.mp3" data-name="Just Relax">🎼 Just Relax<br><small>Your Track</small></button>
-
-        <!-- Center play button -->
-        <div class="play-container">
+        <!-- Play Button Section - TOP CENTER -->
+        <div class="play-section">
             <button id="playBtn" aria-label="Play/Pause">
                 <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 <svg class="pause-icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
             </button>
             <div id="nowPlaying">🎶 Groove Salad 🎶</div>
+        </div>
+
+        <!-- Stations Grid - BELOW play button -->
+        <div class="stations-grid">
+            <!-- TOP TIER RELAXING STATIONS (verified working) -->
+            <button class="station-btn selected" data-src="https://ice1.somafm.com/groovesalad-128-mp3" data-name="Groove Salad">🌿 Groove Salad<br><small>Ambient Chill</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/dronezone-256-mp3" data-name="Drone Zone">🌌 Drone Zone<br><small>Atmospheric Ambient</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/deepspaceone-128-mp3" data-name="Deep Space">🚀 Deep Space One<br><small>Space Music</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/lush-128-mp3" data-name="Lush">🌺 Lush<br><small>Mellow Vocals</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/fluid-128-mp3" data-name="Fluid">💧 Fluid<br><small>Mellow Electronic</small></button>
+            
+            <button class="station-btn" data-src="https://stream.radioparadise.com/mellow-320" data-name="Radio Paradise Mellow">🎵 RP Mellow<br><small>Mellow Mix</small></button>
+            <button class="station-btn" data-src="https://stream.radioparadise.com/eclectic-320" data-name="Radio Paradise Eclectic">🎨 RP Eclectic<br><small>World Eclectic</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/synphaera-256-mp3" data-name="Synphaera">🎹 Synphaera<br><small>Sonic Soundscapes</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/spacestation-128-mp3" data-name="Space Station">🛸 Space Station<br><small>Ambient Electronica</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/secretagent-128-mp3" data-name="Secret Agent">🕴️ Secret Agent<br><small>Spy Jazz & Lounge</small></button>
+            
+            <button class="station-btn" data-src="https://ice1.somafm.com/sonicuniverse-256-mp3" data-name="Sonic Universe">🎼 Sonic Universe<br><small>Transcendent</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/digitalis-128-mp3" data-name="Digitalis">🌸 Digitalis<br><small>Downtempo</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/thetrip-128-mp3" data-name="The Trip">✨ The Trip<br><small>Progressive House</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/beatblender-128-mp3" data-name="Beat Blender">🎧 Beat Blender<br><small>Eclectic Beats</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/indiepop-128-mp3" data-name="Indie Pop">🎸 Indie Pop Rocks<br><small>Indie Pop</small></button>
+            
+            <button class="station-btn" data-src="https://ice1.somafm.com/bagel-128-mp3" data-name="BAGeL Radio">🥯 BAGeL Radio<br><small>Acoustic/Electronic</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/poptron-128-mp3" data-name="PopTron">🔮 PopTron<br><small>Electropop</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/suburbsofgoa-128-mp3" data-name="Suburbs of Goa">🕉️ Suburbs of Goa<br><small>Goa Psytrance</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/missioncontrol-128-mp3" data-name="Mission Control">🚀 Mission Control<br><small>Ambient Space</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/defcon-256-mp3" data-name="DEF CON Radio">⚡ DEF CON Radio<br><small>Electronic Beats</small></button>
+            
+            <button class="station-btn" data-src="https://ice1.somafm.com/cliqhop-128-mp3" data-name="cliqhop idm">💿 cliqhop idm<br><small>Intelligent Dance</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/folkfwd-128-mp3" data-name="Folk Forward">🪕 Folk Forward<br><small>Indie Folk</small></button>
+            <button class="station-btn" data-src="https://ice1.somafm.com/thistle-128-mp3" data-name="Thistle Radio">🍀 Thistle Radio<br><small>Celtic/Scottish</small></button>
+            <button class="station-btn" data-src="just-relax-11157.mp3" data-name="Just Relax">🎼 Just Relax<br><small>Your Track</small></button>
         </div>
     </div>
 
