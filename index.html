@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎵 Study Music Kiosk - Epic Edition</title>
+    <title>🎹 Relaxing Study Music Kiosk</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
@@ -14,13 +14,13 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
             background-size: 400% 400%;
             animation: gradientShift 15s ease infinite;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'Poppins', sans-serif;
-            overflow: hidden;
-            position: relative;
+            overflow-x: hidden;
+            padding: 20px;
         }
         
         @keyframes gradientShift {
@@ -29,21 +29,22 @@
             100% { background-position: 0% 50%; }
         }
         
-        /* Floating particles background */
+        /* Floating particles */
         .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
+            position: fixed;
+            width: 3px;
+            height: 3px;
             background: rgba(255, 255, 255, 0.6);
             border-radius: 50%;
-            animation: float 20s infinite;
+            pointer-events: none;
+            animation: float 25s infinite;
         }
         
         @keyframes float {
-            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
             10% { opacity: 1; }
             90% { opacity: 1; }
-            100% { transform: translateY(-100vh) translateX(50px) scale(1.5); opacity: 0; }
+            100% { transform: translateY(-100vh) translateX(30px); opacity: 0; }
         }
         
         /* Start Screen */
@@ -84,18 +85,14 @@
         }
         
         #startBtn:hover {
-            transform: scale(1.15) rotate(-2deg);
+            transform: scale(1.15);
             box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 150px rgba(255,255,255,0.5);
-        }
-        
-        #startBtn:active {
-            transform: scale(0.95);
         }
         
         /* Header */
         .header {
-            position: absolute;
-            top: 20px;
+            position: fixed;
+            top: 25px;
             left: 50%;
             transform: translateX(-50%);
             text-align: center;
@@ -104,10 +101,9 @@
             text-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
         .header h1 {
-            font-size: 48px;
+            font-size: 52px;
             font-weight: 800;
-            margin-bottom: 8px;
-            animation: titleBounce 3s ease infinite;
+            margin-bottom: 10px;
             background: linear-gradient(90deg, #fff, #f0f0f0, #fff);
             background-size: 200%;
             -webkit-background-clip: text;
@@ -120,438 +116,355 @@
             100% { background-position: 200%; }
         }
         
-        @keyframes titleBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
         .header p {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 600;
             opacity: 0.95;
-            animation: fadeInOut 4s ease infinite;
         }
         
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
-        }
-        
-        /* Main container - FULL SCREEN */
+        /* Main Grid Layout */
         .main-container {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
+            width: 100%;
+            max-width: 1800px;
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 25px;
+            padding: 140px 40px 140px 40px;
             align-items: center;
-            justify-content: center;
-            position: relative;
         }
         
-        /* Circle container - MUCH LARGER */
-        .circle-container {
-            position: relative;
-            width: 95vmin;
-            height: 95vmin;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Center play button - BIGGER & BETTER */
-        .play-container {
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            z-index: 50;
-        }
-        
-        #nowPlaying {
-            color: #ffffff;
-            font-size: 24px;
-            font-weight: 700;
-            max-width: 300px;
-            text-align: center;
-            text-shadow: 0 3px 15px rgba(0,0,0,0.6);
-            line-height: 1.4;
-            animation: textGlow 2s ease infinite;
-            padding: 12px 24px;
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            border: 2px solid rgba(255,255,255,0.3);
-        }
-        
-        @keyframes textGlow {
-            0%, 100% { text-shadow: 0 3px 15px rgba(0,0,0,0.6); }
-            50% { text-shadow: 0 5px 25px rgba(255,255,255,0.8); }
-        }
-        
-        #playBtn {
-            width: 240px; 
-            height: 240px;
-            border-radius: 50%; 
-            border: 6px solid rgba(255,255,255,0.5);
-            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
-            cursor: pointer;
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            box-shadow: 0 15px 60px rgba(0,0,0,0.4), 
-                        0 0 80px rgba(255,255,255,0.4),
-                        inset 0 -10px 30px rgba(0,0,0,0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        #playBtn::before {
-            content: '';
-            position: absolute;
-            inset: -50%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.5), transparent);
-            transform: rotate(45deg);
-            animation: shine 3s infinite;
-        }
-        
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-        
-        #playBtn:hover { 
-            transform: scale(1.15) rotate(5deg); 
-            box-shadow: 0 20px 80px rgba(0,0,0,0.5), 
-                        0 0 120px rgba(255,255,255,0.6),
-                        inset 0 -10px 30px rgba(0,0,0,0.15);
-            border-color: rgba(255,255,255,0.8);
-        }
-        
-        #playBtn:active { 
-            transform: scale(0.95); 
-        }
-        
-        #playBtn svg { 
-            width: 90px; 
-            height: 90px; 
-            fill: #667eea;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
-            z-index: 1;
-        }
-        
-        #playBtn .pause-icon { display: none; }
-        #playBtn.playing {
-            animation: playingPulse 1.5s ease infinite;
-        }
-        #playBtn.playing .play-icon { display: none; }
-        #playBtn.playing .pause-icon { display: block; }
-        
-        @keyframes playingPulse {
-            0%, 100% { box-shadow: 0 15px 60px rgba(0,0,0,0.4), 0 0 80px rgba(255,255,255,0.4); }
-            50% { box-shadow: 0 15px 60px rgba(0,0,0,0.4), 0 0 120px rgba(102,126,234,0.8); }
-        }
-        
-        /* Station buttons - ENHANCED */
+        /* Station buttons - SPACIOUS */
         .station-btn {
-            position: absolute;
-            min-width: 140px;
-            max-width: 160px;
-            padding: 14px 20px;
-            border-radius: 25px;
-            border: 3px solid rgba(255,255,255,0.4);
-            background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1));
-            backdrop-filter: blur(15px);
+            min-height: 90px;
+            padding: 20px 25px;
+            border-radius: 30px;
+            border: 3px solid rgba(255,255,255,0.5);
+            background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15));
+            backdrop-filter: blur(20px);
             color: #ffffff;
-            font-size: 15px;
+            font-size: 17px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             text-align: center;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3), 
-                        inset 0 1px 0 rgba(255,255,255,0.3);
-            line-height: 1.3;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
-            animation: buttonFloat 6s ease-in-out infinite;
-        }
-        
-        @keyframes buttonFloat {
-            0%, 100% { transform: translate(-50%, 0); }
-            50% { transform: translate(-50%, -8px); }
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3), 
+                        inset 0 1px 0 rgba(255,255,255,0.4);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
         }
         
         .station-btn:hover { 
             background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.3));
             border-color: rgba(255,255,255,0.9);
-            transform: translate(-50%, 0) scale(1.15) rotate(-2deg);
-            box-shadow: 0 10px 35px rgba(0,0,0,0.4), 
-                        0 0 40px rgba(255,255,255,0.6),
-                        inset 0 1px 0 rgba(255,255,255,0.5);
-            z-index: 100;
-            animation: none;
+            transform: scale(1.12) translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4), 
+                        0 0 50px rgba(255,255,255,0.7);
         }
         
         .station-btn.selected { 
-            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
             color: #667eea; 
             border-color: #ffffff; 
-            box-shadow: 0 10px 40px rgba(255,255,255,0.6), 
-                        0 0 60px rgba(102,126,234,0.8),
-                        inset 0 -3px 10px rgba(102,126,234,0.2);
-            transform: translate(-50%, 0) scale(1.2);
-            z-index: 100;
-            animation: selectedPulse 2s ease infinite;
+            box-shadow: 0 12px 45px rgba(255,255,255,0.7), 
+                        0 0 70px rgba(102,126,234,0.9);
+            transform: scale(1.15) translateY(-8px);
+            animation: selectedGlow 2s ease infinite;
         }
         
-        @keyframes selectedPulse {
-            0%, 100% { box-shadow: 0 10px 40px rgba(255,255,255,0.6), 0 0 60px rgba(102,126,234,0.8); }
-            50% { box-shadow: 0 10px 40px rgba(255,255,255,0.8), 0 0 90px rgba(102,126,234,1); }
+        @keyframes selectedGlow {
+            0%, 100% { box-shadow: 0 12px 45px rgba(255,255,255,0.7), 0 0 70px rgba(102,126,234,0.9); }
+            50% { box-shadow: 0 12px 45px rgba(255,255,255,0.9), 0 0 100px rgba(102,126,234,1); }
         }
         
-        /* Position 50 buttons in perfect circles - 3 RINGS! */
-        /* Outer ring - 20 buttons */
-        .station-btn:nth-child(1) { top: 2%; left: 50%; animation-delay: 0s; }
-        .station-btn:nth-child(2) { top: 5%; left: 65%; animation-delay: 0.3s; }
-        .station-btn:nth-child(3) { top: 11%; left: 78%; animation-delay: 0.6s; }
-        .station-btn:nth-child(4) { top: 20%; left: 88%; animation-delay: 0.9s; }
-        .station-btn:nth-child(5) { top: 31%; left: 95%; animation-delay: 1.2s; }
-        .station-btn:nth-child(6) { top: 43%; left: 98%; animation-delay: 1.5s; }
-        .station-btn:nth-child(7) { top: 56%; left: 98%; animation-delay: 1.8s; }
-        .station-btn:nth-child(8) { top: 68%; left: 95%; animation-delay: 2.1s; }
-        .station-btn:nth-child(9) { top: 79%; left: 88%; animation-delay: 2.4s; }
-        .station-btn:nth-child(10) { top: 88%; left: 78%; animation-delay: 2.7s; }
-        .station-btn:nth-child(11) { top: 94%; left: 65%; animation-delay: 3s; }
-        .station-btn:nth-child(12) { top: 97%; left: 50%; animation-delay: 3.3s; }
-        .station-btn:nth-child(13) { top: 94%; left: 35%; animation-delay: 3.6s; }
-        .station-btn:nth-child(14) { top: 88%; left: 22%; animation-delay: 3.9s; }
-        .station-btn:nth-child(15) { top: 79%; left: 12%; animation-delay: 4.2s; }
-        .station-btn:nth-child(16) { top: 68%; left: 5%; animation-delay: 4.5s; }
-        .station-btn:nth-child(17) { top: 56%; left: 2%; animation-delay: 4.8s; }
-        .station-btn:nth-child(18) { top: 43%; left: 2%; animation-delay: 5.1s; }
-        .station-btn:nth-child(19) { top: 31%; left: 5%; animation-delay: 5.4s; }
-        .station-btn:nth-child(20) { top: 20%; left: 12%; animation-delay: 5.7s; }
-        .station-btn:nth-child(21) { top: 11%; left: 22%; animation-delay: 6s; }
-        .station-btn:nth-child(22) { top: 5%; left: 35%; animation-delay: 6.3s; }
+        /* Center HUGE play button - spans 2x2 grid cells */
+        .play-container {
+            grid-column: 3 / 5;
+            grid-row: 2 / 4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            z-index: 50;
+        }
         
-        /* Middle ring - 16 buttons */
-        .station-btn:nth-child(23) { top: 12%; left: 50%; animation-delay: 0.2s; }
-        .station-btn:nth-child(24) { top: 17%; left: 65%; animation-delay: 0.5s; }
-        .station-btn:nth-child(25) { top: 25%; left: 76%; animation-delay: 0.8s; }
-        .station-btn:nth-child(26) { top: 36%; left: 84%; animation-delay: 1.1s; }
-        .station-btn:nth-child(27) { top: 49%; left: 87%; animation-delay: 1.4s; }
-        .station-btn:nth-child(28) { top: 62%; left: 84%; animation-delay: 1.7s; }
-        .station-btn:nth-child(29) { top: 73%; left: 76%; animation-delay: 2s; }
-        .station-btn:nth-child(30) { top: 82%; left: 65%; animation-delay: 2.3s; }
-        .station-btn:nth-child(31) { top: 87%; left: 50%; animation-delay: 2.6s; }
-        .station-btn:nth-child(32) { top: 82%; left: 35%; animation-delay: 2.9s; }
-        .station-btn:nth-child(33) { top: 73%; left: 24%; animation-delay: 3.2s; }
-        .station-btn:nth-child(34) { top: 62%; left: 16%; animation-delay: 3.5s; }
-        .station-btn:nth-child(35) { top: 49%; left: 13%; animation-delay: 3.8s; }
-        .station-btn:nth-child(36) { top: 36%; left: 16%; animation-delay: 4.1s; }
-        .station-btn:nth-child(37) { top: 25%; left: 24%; animation-delay: 4.4s; }
-        .station-btn:nth-child(38) { top: 17%; left: 35%; animation-delay: 4.7s; }
+        #nowPlaying {
+            color: #ffffff;
+            font-size: 26px;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 0 3px 15px rgba(0,0,0,0.6);
+            padding: 15px 30px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(25px);
+            border-radius: 35px;
+            border: 3px solid rgba(255,255,255,0.4);
+            max-width: 350px;
+        }
         
-        /* Inner ring - 12 buttons */
-        .station-btn:nth-child(39) { top: 25%; left: 50%; animation-delay: 0.4s; }
-        .station-btn:nth-child(40) { top: 31%; left: 62%; animation-delay: 0.8s; }
-        .station-btn:nth-child(41) { top: 42%; left: 70%; animation-delay: 1.2s; }
-        .station-btn:nth-child(42) { top: 56%; left: 72%; animation-delay: 1.6s; }
-        .station-btn:nth-child(43) { top: 68%; left: 67%; animation-delay: 2s; }
-        .station-btn:nth-child(44) { top: 76%; left: 57%; animation-delay: 2.4s; }
-        .station-btn:nth-child(45) { top: 77%; left: 45%; animation-delay: 2.8s; }
-        .station-btn:nth-child(46) { top: 72%; left: 33%; animation-delay: 3.2s; }
-        .station-btn:nth-child(47) { top: 62%; left: 25%; animation-delay: 3.6s; }
-        .station-btn:nth-child(48) { top: 49%; left: 24%; animation-delay: 4s; }
-        .station-btn:nth-child(49) { top: 37%; left: 28%; animation-delay: 4.4s; }
-        .station-btn:nth-child(50) { top: 28%; left: 37%; animation-delay: 4.8s; }
+        #playBtn {
+            width: 260px; 
+            height: 260px;
+            border-radius: 50%; 
+            border: 6px solid rgba(255,255,255,0.6);
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+            cursor: pointer;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            transition: all 0.4s ease;
+            box-shadow: 0 20px 70px rgba(0,0,0,0.5), 
+                        0 0 90px rgba(255,255,255,0.5);
+        }
+        
+        #playBtn:hover { 
+            transform: scale(1.12); 
+            box-shadow: 0 25px 90px rgba(0,0,0,0.6), 
+                        0 0 130px rgba(255,255,255,0.7);
+        }
+        
+        #playBtn svg { 
+            width: 100px; 
+            height: 100px; 
+            fill: #667eea;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+        
+        #playBtn .pause-icon { display: none; }
+        #playBtn.playing .play-icon { display: none; }
+        #playBtn.playing .pause-icon { display: block; }
+        #playBtn.playing {
+            animation: playingPulse 2s ease infinite;
+        }
+        
+        @keyframes playingPulse {
+            0%, 100% { box-shadow: 0 20px 70px rgba(0,0,0,0.5), 0 0 90px rgba(255,255,255,0.5); }
+            50% { box-shadow: 0 20px 70px rgba(0,0,0,0.5), 0 0 140px rgba(102,126,234,1); }
+        }
+        
+        /* Grid positions for 24 buttons around the center */
+        .station-btn:nth-child(1) { grid-column: 1; grid-row: 1; }
+        .station-btn:nth-child(2) { grid-column: 2; grid-row: 1; }
+        .station-btn:nth-child(3) { grid-column: 3; grid-row: 1; }
+        .station-btn:nth-child(4) { grid-column: 4; grid-row: 1; }
+        .station-btn:nth-child(5) { grid-column: 5; grid-row: 1; }
+        .station-btn:nth-child(6) { grid-column: 6; grid-row: 1; }
+        
+        .station-btn:nth-child(7) { grid-column: 1; grid-row: 2; }
+        .station-btn:nth-child(8) { grid-column: 2; grid-row: 2; }
+        /* Center play button occupies 3-4, 2-3 */
+        .station-btn:nth-child(9) { grid-column: 5; grid-row: 2; }
+        .station-btn:nth-child(10) { grid-column: 6; grid-row: 2; }
+        
+        .station-btn:nth-child(11) { grid-column: 1; grid-row: 3; }
+        .station-btn:nth-child(12) { grid-column: 2; grid-row: 3; }
+        /* Center continues */
+        .station-btn:nth-child(13) { grid-column: 5; grid-row: 3; }
+        .station-btn:nth-child(14) { grid-column: 6; grid-row: 3; }
+        
+        .station-btn:nth-child(15) { grid-column: 1; grid-row: 4; }
+        .station-btn:nth-child(16) { grid-column: 2; grid-row: 4; }
+        .station-btn:nth-child(17) { grid-column: 3; grid-row: 4; }
+        .station-btn:nth-child(18) { grid-column: 4; grid-row: 4; }
+        .station-btn:nth-child(19) { grid-column: 5; grid-row: 4; }
+        .station-btn:nth-child(20) { grid-column: 6; grid-row: 4; }
+        
+        .station-btn:nth-child(21) { grid-column: 1; grid-row: 5; }
+        .station-btn:nth-child(22) { grid-column: 2; grid-row: 5; }
+        .station-btn:nth-child(23) { grid-column: 3; grid-row: 5; }
+        .station-btn:nth-child(24) { grid-column: 4; grid-row: 5; }
+        .station-btn:nth-child(25) { grid-column: 5; grid-row: 5; }
+        .station-btn:nth-child(26) { grid-column: 6; grid-row: 5; }
         
         /* Logo & Volume */
         #logo { 
             position: fixed; 
-            bottom: 25px; 
-            left: 25px; 
-            height: 70px; 
+            bottom: 30px; 
+            left: 30px; 
+            height: 80px; 
             opacity: 0.95;
-            filter: drop-shadow(0 4px 15px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 5px 20px rgba(0,0,0,0.6));
             transition: all 0.3s ease;
+            z-index: 200;
         }
         #logo:hover {
-            transform: scale(1.1) rotate(5deg);
-            filter: drop-shadow(0 8px 25px rgba(255,255,255,0.8));
+            transform: scale(1.15) rotate(5deg);
         }
         
         .volume-controls {
             position: fixed; 
-            bottom: 30px; 
-            right: 30px;
+            bottom: 35px; 
+            right: 35px;
             display: flex; 
             align-items: center; 
-            gap: 15px;
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(20px);
-            padding: 15px 25px;
-            border-radius: 50px;
-            border: 2px solid rgba(255,255,255,0.3);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            gap: 18px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(25px);
+            padding: 18px 30px;
+            border-radius: 60px;
+            border: 3px solid rgba(255,255,255,0.4);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            z-index: 200;
         }
         
         #muteBtn {
-            width: 55px; 
-            height: 55px;
+            width: 60px; 
+            height: 60px;
             border-radius: 50%; 
-            border: 3px solid rgba(255,255,255,0.5);
+            border: 3px solid rgba(255,255,255,0.6);
             background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
-            backdrop-filter: blur(10px);
             cursor: pointer;
             display: flex; 
             justify-content: center; 
             align-items: center;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         #muteBtn:hover { 
+            transform: scale(1.15);
             background: linear-gradient(135deg, rgba(255,255,255,0.5), rgba(255,255,255,0.3));
-            transform: scale(1.1) rotate(10deg);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
         #muteBtn svg { 
-            width: 28px; 
-            height: 28px; 
+            width: 30px; 
+            height: 30px; 
             fill: #ffffff;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.4));
         }
         #muteBtn .muted-icon { display: none; }
         #muteBtn.muted .volume-icon { display: none; }
         #muteBtn.muted .muted-icon { display: block; }
         
         #volumeSlider {
-            width: 140px; 
-            height: 10px;
+            width: 160px; 
+            height: 12px;
             -webkit-appearance: none; 
             appearance: none;
-            background: rgba(255,255,255,0.3); 
-            border-radius: 5px;
+            background: rgba(255,255,255,0.4); 
+            border-radius: 6px;
             outline: none; 
             cursor: pointer;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
         }
         #volumeSlider::-webkit-slider-thumb {
             -webkit-appearance: none; 
-            appearance: none;
-            width: 24px; 
-            height: 24px;
+            width: 26px; 
+            height: 26px;
             background: linear-gradient(135deg, #ffffff, #f0f0f0);
             border-radius: 50%; 
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             transition: all 0.2s ease;
         }
         #volumeSlider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+            transform: scale(1.25);
         }
         #volumeSlider::-moz-range-thumb {
-            width: 24px; 
-            height: 24px;
+            width: 26px; 
+            height: 26px;
             background: linear-gradient(135deg, #ffffff, #f0f0f0);
             border-radius: 50%; 
             cursor: pointer; 
             border: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        @media (max-width: 1400px) {
+            .main-container {
+                grid-template-columns: repeat(5, 1fr);
+                padding: 130px 30px 130px 30px;
+            }
+            .play-container {
+                grid-column: 2 / 5;
+                grid-row: 2 / 4;
+            }
+        }
+
+        @media (max-width: 1000px) {
+            .main-container {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+            }
+            .play-container {
+                grid-column: 2 / 4;
+                grid-row: 3 / 5;
+            }
+            #playBtn {
+                width: 200px;
+                height: 200px;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Floating particles -->
     <script>
-        for(let i = 0; i < 50; i++) {
+        for(let i = 0; i < 40; i++) {
             const particle = document.createElement('div');
             particle.className = 'particle';
             particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 20 + 's';
-            particle.style.animationDuration = (Math.random() * 10 + 15) + 's';
+            particle.style.animationDelay = Math.random() * 25 + 's';
+            particle.style.animationDuration = (Math.random() * 15 + 20) + 's';
             document.body.appendChild(particle);
         }
     </script>
 
     <!-- Start Screen -->
     <div id="startScreen">
-        <button id="startBtn">🎵 LET'S GO! 🎵</button>
+        <button id="startBtn">🎹 BEGIN STUDYING 🎹</button>
     </div>
 
     <audio id="audio" preload="auto" crossorigin="anonymous"></audio>
 
     <div class="header">
-        <h1>🎵 EPIC STUDY MUSIC KIOSK 🎵</h1>
-        <p>✨ 50 Amazing Stations - Choose Your Vibe! ✨</p>
+        <h1>🎹 Relaxing Study Music 🎹</h1>
+        <p>Piano • Jazz • Classical • Ambient • Lo-Fi</p>
     </div>
 
     <div class="main-container">
-        <div class="circle-container">
-            <!-- 50 STATIONS - OUTER RING (22) -->
-            <button class="station-btn selected" data-src="https://ice1.somafm.com/groovesalad-128-mp3" data-name="Groove Salad">🌿 Groove Salad</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/dronezone-256-mp3" data-name="Drone Zone">🌌 Drone Zone</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/deepspaceone-128-mp3" data-name="Deep Space">🚀 Deep Space</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/spacestation-128-mp3" data-name="Space Station">🛸 Space Station</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/beatblender-128-mp3" data-name="Beat Blender">🎧 Beat Blender</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/defcon-256-mp3" data-name="DEF CON">⚡ DEF CON</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/thetrip-128-mp3" data-name="The Trip">✨ The Trip</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/fluid-128-mp3" data-name="Fluid">💧 Fluid</button>
-            <button class="station-btn" data-src="https://stream.radioparadise.com/mellow-320" data-name="RP Mellow">🎵 RP Mellow</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/sf1033-128-mp3" data-name="SF 10-33">📻 SF 10-33</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/synphaera-256-mp3" data-name="Synphaera">🎹 Synphaera</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/lush-128-mp3" data-name="Lush">🌺 Lush</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/indiepop-128-mp3" data-name="Indie Pop">🎸 Indie Pop</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/bagel-128-mp3" data-name="BAGeL">🥯 BAGeL</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/illstreet-128-mp3" data-name="Illinois St">🎤 Illinois St</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/poptron-128-mp3" data-name="PopTron">🔮 PopTron</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/suburbsofgoa-128-mp3" data-name="Goa">🕉️ Goa</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/sonicuniverse-256-mp3" data-name="Sonic Universe">🎼 Sonic Universe</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/digitalis-128-mp3" data-name="Digitalis">🌸 Digitalis</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/tags-128-mp3" data-name="Tag's Trip">🎺 Tag's Trip</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/secretagent-128-mp3" data-name="Secret Agent">🕴️ Secret Agent</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/seventies-320-mp3" data-name="70s Hits">🎶 70s Hits</button>
-            
-            <!-- MIDDLE RING (16) -->
-            <button class="station-btn" data-src="https://ice1.somafm.com/folkfwd-128-mp3" data-name="Folk Forward">🪕 Folk Forward</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/thistle-128-mp3" data-name="Thistle">🍀 Thistle</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/bootliquor-320-mp3" data-name="Boot Liquor">🤠 Boot Liquor</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/metal-128-mp3" data-name="Metal">🤘 Metal</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/covers-128-mp3" data-name="Covers">🎤 Covers</button>
-            <button class="station-btn" data-src="https://stream.radioparadise.com/rock-320" data-name="RP Rock">🎸 RP Rock</button>
-            <button class="station-btn" data-src="https://stream.radioparadise.com/world-320" data-name="RP World">🌍 RP World</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/dubstep-256-mp3" data-name="Dub Step">🔊 Dub Step</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/cliqhop-128-mp3" data-name="cliqhop">💿 cliqhop</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/doomed-128-mp3" data-name="Doomed">⚫ Doomed</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/specials-128-mp3" data-name="Specials">🎭 Specials</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/u80s-256-mp3" data-name="80s Underground">📼 80s Underground</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/missioncontrol-128-mp3" data-name="Mission Control">🚀 Mission Control</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/christmas-128-mp3" data-name="Xmas">🎄 Xmas</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/7soul-128-aac" data-name="Seven Soul">🎷 Seven Soul</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/reggae-256-mp3" data-name="Reggae">🌴 Reggae</button>
-            
-            <!-- INNER RING (12) + YOUR MP3 -->
-            <button class="station-btn" data-src="https://ice1.somafm.com/groovesalad256-128-mp3" data-name="Groove Salad 256">🌿 GS Classic</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/n5md-128-mp3" data-name="n5MD Radio">🎛️ n5MD</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/indiespot-128-mp3" data-name="Indie Spot">🎯 Indie Spot</button>
-            <button class="station-btn" data-src="https://stream.radioparadise.com/eclectic-320" data-name="RP Eclectic">🎨 RP Eclectic</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/scanner-128-mp3" data-name="Scanner">📡 Scanner</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/thistle-64-aac" data-name="Celtic">🎻 Celtic</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/thistleradio-128-mp3" data-name="Thistle Classic">☘️ Thistle+</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/suburbsofgoa-256-mp3" data-name="Goa Trance">🌀 Goa Trance</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/deepspaceone-256-mp3" data-name="Deep Space HD">🌠 Deep Space HD</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/live-128-mp3" data-name="SomaFM Live">🔴 SomaFM Live</button>
-            <button class="station-btn" data-src="https://ice1.somafm.com/christmas-64-aac" data-name="Holiday Lounge">🎅 Holiday</button>
-            <button class="station-btn" data-src="just-relax-11157.mp3" data-name="Just Relax">🎼 Just Relax</button>
+        <!-- 24 STUDY-FOCUSED STATIONS -->
+        <button class="station-btn selected" data-src="https://ice1.somafm.com/groovesalad-128-mp3" data-name="Groove Salad">🌿 Groove Salad<br><small>Ambient Chill</small></button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/dronezone-256-mp3" data-name="Drone Zone">🌌 Drone Zone<br><small>Atmospheric</small></button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/deepspaceone-128-mp3" data-name="Deep Space">🚀 Deep Space<br><small>Space Music</small></button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/spacestation-128-mp3" data-name="Space Station">🛸 Space Station<br><small>Ambient Electro</small></button>
+        <button class="station-btn" data-src="https://stream.radioparadise.com/mellow-320" data-name="RP Mellow">🎵 RP Mellow<br><small>Mellow Mix</small></button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/sf1033-128-mp3" data-name="SF 10-33">📻 SF 10-33<br><small>Ambient Focus</small></button>
+        
+        <button class="station-btn" data-src="https://ice1.somafm.com/synphaera-256-mp3" data-name="Synphaera">🎹 Synphaera<br><small>Soundscapes</small></button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/lush-128-mp3" data-name="Lush">🌺 Lush<br><small>Mellow Vocals</small></button>
+        <!-- CENTER PLAY BUTTON HERE (grid 3-4, 2-3) -->
+        <button class="station-btn" data-src="https://ice1.somafm.com/fluid-128-mp3" data-name="Fluid">💧 Fluid<br><small>Mellow Electronic</small></button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/thetrip-128-mp3" data-name="The Trip">✨ The Trip<br><small>Progressive</small></button>
+        
+        <button class="station-btn" data-src="https://ice1.somafm.com/tags-128-mp3" data-name="Tag's Trip">🎺 Tag's Trip<br><small>Trance Mix</small></button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/sonicuniverse-256-mp3" data-name="Sonic Universe">🎼 Sonic Universe<br><small>Transcendent</small></button>
+        <!-- CENTER CONTINUES -->
+        <button class="station-btn" data-src="https://ice1.somafm.com/digitalis-128-mp3" data-name="Digitalis">🌸 Digitalis<br><small>Downtempo</small></button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/secretagent-128-mp3" data-name="Secret Agent">🕴️ Secret Agent<br><small>Spy Jazz</small></button>
+        
+        <button class="station-btn" data-src="https://ice1.somafm.com/suburbsofgoa-128-mp3" data-name="Suburbs of Goa">🕉️ Suburbs of Goa<br><small>Goa Trance</small></button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/folkfwd-128-mp3" data-name="Folk Forward">🪕 Folk Forward<br><small>Indie Folk</small></button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/thistle-128-mp3" data-name="Thistle Radio">🍀 Thistle<br><small>Celtic</small></button>
+        <button class="station-btn" data-src="https://stream.radioparadise.com/world-320" data-name="RP World">🌍 RP World<br><small>World Music</small></button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/cliqhop-128-mp3" data-name="cliqhop">💿 cliqhop<br><small>IDM Beats</small></button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/missioncontrol-128-mp3" data-name="Mission Control">🚀 Mission Control<br><small>Ambient Space</small></button>
+        
+        <button class="station-btn" data-src="https://ice1.somafm.com/7soul-128-aac" data-name="Seven Soul">🎷 Seven Soul<br><small>Smooth Jazz</small></button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/n5md-128-mp3" data-name="n5MD Radio">🎛️ n5MD<br><small>Electronica</small></button>
+        <button class="station-btn" data-src="https://stream.radioparadise.com/eclectic-320" data-name="RP Eclectic">🎨 RP Eclectic<br><small>Eclectic Mix</small></button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/defcon-256-mp3" data-name="DEF CON Radio">⚡ DEF CON<br><small>Electronic</small></button>
+        <button class="station-btn" data-src="https://ice1.somafm.com/beatblender-128-mp3" data-name="Beat Blender">🎧 Beat Blender<br><small>Eclectic Beats</small></button>
+        <button class="station-btn" data-src="just-relax-11157.mp3" data-name="Just Relax">🎼 Just Relax<br><small>Your Track</small></button>
 
-            <!-- Center play button -->
-            <div class="play-container">
-                <button id="playBtn" aria-label="Play/Pause">
-                    <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                    <svg class="pause-icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-                </button>
-                <div id="nowPlaying">Groove Salad</div>
-            </div>
+        <!-- Center play button -->
+        <div class="play-container">
+            <button id="playBtn" aria-label="Play/Pause">
+                <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <svg class="pause-icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <div id="nowPlaying">🎶 Groove Salad 🎶</div>
         </div>
     </div>
 
