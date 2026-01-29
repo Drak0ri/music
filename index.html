@@ -53,7 +53,7 @@
         
         .stations {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             margin-top: 60px;
         }
         .station-btn {
@@ -71,8 +71,10 @@
         .play-container {
             flex: 1;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            gap: 30px;
         }
         #playBtn {
             width: 200px; height: 200px;
@@ -89,6 +91,25 @@
         #playBtn .pause-icon { display: none; }
         #playBtn.playing .play-icon { display: none; }
         #playBtn.playing .pause-icon { display: block; }
+        #testGdriveBtn {
+            padding: 20px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            background: #ffffff;
+            color: #1a237e;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        #testGdriveBtn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+        #testGdriveBtn:active {
+            transform: scale(0.98);
+        }
         #logo { position: fixed; bottom: 20px; left: 20px; height: 60px; opacity: 0.9; }
         .volume-controls {
             position: fixed; bottom: 20px; right: 20px;
@@ -139,6 +160,7 @@
         <button class="station-btn" data-src="https://ice1.somafm.com/indiepop-128-mp3">4</button>
         <button class="station-btn" data-src="https://ice1.somafm.com/beatblender-128-mp3">5</button>
         <button class="station-btn" data-src="https://ice1.somafm.com/gsclassic-128-mp3">6</button>
+        <button class="station-btn" data-src="https://drive.google.com/uc?export=download&id=1SpLuXX3uGr9HHuLIUPXTGEKGvhLky2OS">7</button>
     </div>
 
     <div class="play-container">
@@ -146,6 +168,7 @@
             <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             <svg class="pause-icon" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
         </button>
+        <button id="testGdriveBtn">TEST GDRIVE</button>
     </div>
 
     <img id="logo" src="logo.png" alt="Logo">
@@ -170,6 +193,7 @@
         const volumeSlider = document.getElementById('volumeSlider');
         const startScreen = document.getElementById('startScreen');
         const startBtn = document.getElementById('startBtn');
+        const testGdriveBtn = document.getElementById('testGdriveBtn');
 
         let currentStation = stationBtns[0].dataset.src;
         let isPlaying = false;
@@ -247,6 +271,23 @@
                     4: 'MEDIA_ERR_SRC_NOT_SUPPORTED - Format not supported'
                 };
                 console.error('Error details:', errorMessages[audio.error.code] || 'Unknown error');
+                
+                // Enhanced logging for Google Drive station
+                const selectedStation = document.querySelector('.station-btn.selected');
+                if (selectedStation && selectedStation.textContent === '7') {
+                    console.error('❌ Google Drive station error detected');
+                    console.error('🔍 Error type:', errorMessages[audio.error.code] || 'Unknown');
+                    if (audio.error.code === 2) {
+                        console.error('💡 Network error - Check:');
+                        console.error('  - File sharing permissions (must be "Anyone with link")');
+                        console.error('  - CORS headers from Google Drive');
+                        console.error('  - Network connectivity');
+                    } else if (audio.error.code === 4) {
+                        console.error('💡 Format not supported - Check:');
+                        console.error('  - File is valid MP3 format');
+                        console.error('  - Browser supports MP3 playback');
+                    }
+                }
             }
         });
         audio.addEventListener('loadstart', () => console.log('Load start'));
@@ -269,6 +310,16 @@
                 this.classList.add('selected');
                 currentStation = this.dataset.src;
 
+                // Enhanced logging for Google Drive station
+                if (this.textContent === '7') {
+                    console.log('🎵 Google Drive station selected');
+                    console.log('📍 URL:', currentStation);
+                    console.log('🔍 Checking for potential issues:');
+                    console.log('  - CORS: Audio element has crossorigin="anonymous"');
+                    console.log('  - URL format: Using direct download format');
+                    console.log('  - Required: File must have "Anyone with link" sharing permissions');
+                }
+
                 if (isPlaying) {
                     console.log('Switching to station:', currentStation);
                     audio.src = currentStation;
@@ -276,6 +327,16 @@
                     
                     audio.play().catch(err => {
                         console.error('Station change play error:', err);
+                        // Enhanced error logging for Google Drive
+                        if (this.textContent === '7') {
+                            console.error('❌ Google Drive playback failed');
+                            console.error('🔍 Possible causes:');
+                            console.error('  1. CORS policy blocking the request');
+                            console.error('  2. File sharing permissions not set to public');
+                            console.error('  3. Invalid or expired file ID');
+                            console.error('  4. Network connectivity issues');
+                            console.error('  5. File format incompatible with browser');
+                        }
                         playBtn.classList.remove('playing');
                         isPlaying = false;
                     });
@@ -346,6 +407,59 @@
                 previousVolume = audio.volume;
                 audio.muted = true;
                 muteBtn.classList.add('muted');
+            }
+        });
+
+        // TEST GDRIVE button functionality
+        testGdriveBtn.addEventListener('click', async function() {
+            console.log('🎵 TEST GDRIVE button clicked');
+            
+            // If audio not initialized, initialize it first
+            if (!audioInitialized) {
+                console.log('⚠️ Audio not initialized, initializing now...');
+                const gdriveSrc = 'https://drive.google.com/uc?export=download&id=1SpLuXX3uGr9HHuLIUPXTGEKGvhLky2OS';
+                audio.src = gdriveSrc;
+                audio.muted = false;
+                audio.volume = 0.8;
+                audioInitialized = true;
+                audio.load();
+                await new Promise(resolve => setTimeout(resolve, 100));
+                startScreen.classList.add('hidden');
+                console.log('✅ Audio initialized');
+            }
+            
+            // Select station 7 (Google Drive)
+            stationBtns.forEach(b => b.classList.remove('selected'));
+            const station7 = stationBtns[6]; // 7th button (0-indexed)
+            station7.classList.add('selected');
+            currentStation = station7.dataset.src;
+            
+            console.log('📍 Selected Google Drive station');
+            console.log('🔗 URL:', currentStation);
+            console.log('🔍 Checking configuration:');
+            console.log('  - crossorigin attribute:', audio.crossOrigin);
+            console.log('  - Audio volume:', audio.volume);
+            console.log('  - Audio muted:', audio.muted);
+            
+            // Start playing
+            console.log('▶️ Starting playback...');
+            audio.src = currentStation;
+            audio.load();
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
+            try {
+                await audio.play();
+                await requestWakeLock();
+                console.log('✅ Google Drive playback started successfully');
+            } catch (err) {
+                console.error('❌ Google Drive playback failed:', err);
+                console.error('🔍 Error details:', err.name, err.message);
+                console.error('💡 Troubleshooting tips:');
+                console.error('  1. Verify file sharing is set to "Anyone with link"');
+                console.error('  2. Check browser console for CORS errors');
+                console.error('  3. Verify the file ID is correct');
+                console.error('  4. Try accessing the URL directly in browser');
+                console.error('  5. Check if file is a valid MP3 format');
             }
         });
     </script>
